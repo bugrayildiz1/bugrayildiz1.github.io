@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>buri</title>
+    <link rel="shortcut icon" type="image/png" href="updatedburi.png">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<!--    WELCOME PAGE-->
+    <div class = 'container projects'>
+        <h1>Hi! I'm Bugra</h1>
+        <div class="overlay"></div>
+        <button>ENTER</button>
+    </div>
+    <div class = "welcome-section content-hidden">
+        <div class = "content-wrap">
+            <ul class="fly-in-text">
+                <li>Hi! I'm</li>
+                <li>Bugra</li>
+            </ul>
+
+            <a href="#" class="enter-button">Enter</a>
+
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        $(function() {
+
+            var welcomeSection = $('.welcome-section'),
+                enterButton = welcomeSection.find('.enter-button');
+
+            setTimeout(function() {
+                welcomeSection.removeClass('content-hidden');
+            }, 500);
+
+            enterButton.on('click', function)
+        })();
