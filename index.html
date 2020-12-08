@@ -2,27 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>buri</title>
-    <link rel="shortcut icon" type="image/png" href="updatedburi.png">
+    <title>Title</title>
+    <script src="typed.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11"></script>
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-<!--    WELCOME PAGE-->
-    <div class = 'container projects'>
-        <h1>Hi! I'm Bugra</h1>
-        <div class="overlay"></div>
+    <div class="banner-area">
+<!--        <h1>-->
+<!--            <span class="intro">Hi! I am Bugra</span>-->
+<!--        </h1>-->
+        <h2>I am <span class="type"></span> </h2>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script type="text/javascript">
 
-        $(function() {
+    <script src="typed.js"></script>
+<!--    <script>-->
+<!--        var typed = new Typed('.intro', {-->
+<!--            strings: [-->
+<!--                "I am computer science student @UT"-->
+<!--            ],-->
+<!--            typeSpeed: 60,-->
+<!--            backSpeed: 60,-->
+<!--            loop: true-->
+<!--        })-->
+<!--    </script>-->
 
-            var welcomeSection = $('.welcome-section'),
-                enterButton = welcomeSection.find('.enter-button');
+    <script>
+        var typed = new Typed('.type', {
+            strings: [
+                "Bugra",
+                "Computer Science Student @UT",
 
-            setTimeout(function() {
-                welcomeSection.removeClass('content-hidden');
-            }, 500);
+            ],
+            typeSpeed: 60,
+            backSpeed: 60,
+            loop: true
+        });
+    </script>
 
-            enterButton.on('click', function)
-        })();
+
+</body>
+</html>
