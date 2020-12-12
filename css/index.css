@@ -60,7 +60,7 @@ body{
     color: #adff2f;
     opacity: 1;
     margin-top: 30px;
-    transition: all 1s ease 3s;
+    transition: all 1s ease 2s;
 }
 
 
@@ -85,4 +85,45 @@ body{
 .content-hidden .enter-button{
     opacity: 0;
     transform: translate3d(0, -30px,0);
+}
+
+nav{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 8vh;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.logo{
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-size: 22px;
+}
+
+.intro-name{
+@import "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -25px 0 0 -25px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.nav-links{
+    display: flex;
+    justify-content: space-around;
+    width: 35%;
+}
+
+.nav-links li{
+    list-style: none;
+}
+
+.nav-links a{
+    text-decoration: none;
+    letter-spacing: 3px;
+    font-weight: bold;
+    font-size: 14px;
 }
