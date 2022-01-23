@@ -78,7 +78,7 @@ footer {height: 50vh}
 }
 
 .demo-text .text {
-  font-size: clamp(8rem, 15vw, 16rem);
+  font-size: clamp(6rem, 13vw, 16rem);
   line-height: 1;
   font-weight: 900;
 }
