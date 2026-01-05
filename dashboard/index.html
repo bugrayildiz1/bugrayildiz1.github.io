@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Messages Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="whatsapp-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>📱 WhatsApp Dashboard</h1>
+            <div class="header-controls">
+                <span class="status" id="status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting...</span>
+                </span>
+                <button id="refreshBtn" class="btn btn-small">🔄 Refresh</button>
+                <button id="clearBtn" class="btn btn-small btn-danger">🗑️ Clear</button>
+            </div>
+        </header>
+
+        <div class="whatsapp-main">
+            <!-- Sidebar with contacts -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <input type="text" id="searchInput" placeholder="🔍 Search contacts..." class="search-input">
+                </div>
+                <div class="contacts-list" id="contactsList">
+                    <!-- Contacts will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Chat area -->
+            <div class="chat-area">
+                <div class="chat-header" id="chatHeader">
+                    <div class="chat-header-info">
+                        <h2 id="selectedContactName">Select a contact</h2>
+                        <span id="selectedContactPhone" class="contact-phone"></span>
+                    </div>
+                    <div class="chat-header-stats">
+                        <span id="chatMessageCount">0 messages</span>
+                    </div>
+                </div>
+                <div class="messages-container" id="messagesContainer">
+                    <div class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <div class="empty-text">Select a contact to view conversation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats bar at bottom -->
+        <footer class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">Total Contacts</span>
+                <span class="stat-value" id="totalContacts">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Messages</span>
+                <span class="stat-value" id="messageCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Incoming</span>
+                <span class="stat-value" id="incomingCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Today</span>
+                <span class="stat-value" id="todayCount">0</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
