@@ -20,8 +20,30 @@ const totalContacts = document.getElementById('totalContacts');
 const incomingCount = document.getElementById('incomingCount');
 const todayCount = document.getElementById('todayCount');
 
+// Backend configuration (override with ?backend=https://api.example.com&ws=wss://api.example.com/ws or window.BACKEND_HTTP/BACKEND_WS)
+const defaultBackendHttp = 'https://buri-epflow-6a6eaceba333.herokuapp.com';
+const backendHttpBase = getBackendHttpBase();
+const backendWsUrl = getBackendWsUrl(backendHttpBase);
+const apiMessagesUrl = `${backendHttpBase}/api/messages`;
+
 // Initialize
 init();
+
+function getBackendHttpBase() {
+    const params = new URLSearchParams(window.location.search);
+    const override = params.get('backend') || window.BACKEND_HTTP;
+    const base = override || defaultBackendHttp || window.location.origin;
+    return base.replace(/\/+$/, '');
+}
+
+function getBackendWsUrl(httpBase) {
+    const params = new URLSearchParams(window.location.search);
+    const override = params.get('ws') || window.BACKEND_WS;
+    if (override) return override;
+    const parsed = new URL(httpBase);
+    const wsProtocol = parsed.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${wsProtocol}//${parsed.host}`;
+}
 
 function init() {
     connectWebSocket();
@@ -31,10 +53,7 @@ function init() {
 
 // WebSocket connection
 function connectWebSocket() {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.hostname}:${window.location.port || 3000}`;
-    
-    ws = new WebSocket(wsUrl);
+    ws = new WebSocket(backendWsUrl);
     
     ws.onopen = () => {
         console.log('WebSocket connected');
@@ -81,7 +100,7 @@ function connectWebSocket() {
 // Fetch initial messages from API
 async function fetchInitialMessages() {
     try {
-        const response = await fetch('/api/messages');
+        const response = await fetch(apiMessagesUrl);
         const data = await response.json();
         messages = data.messages || [];
         console.log('Loaded messages:', messages.length);
