@@ -599,14 +599,44 @@
   }
 
   .print-btn:hover { background: #00FFD0; }
+
+  /* ── Language switcher ── */
+  .lang-switcher {
+    position: fixed;
+    bottom: 32px; left: 32px;
+    display: flex; gap: 6px;
+    z-index: 1000;
+  }
+  .lang-btn {
+    background: #fff;
+    border: 1.5px solid #dde0ea;
+    color: #555;
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    transition: all .15s;
+    letter-spacing: .5px;
+  }
+  .lang-btn:hover { border-color: #00D4AA; color: #00D4AA; }
+  .lang-btn.active { background: #00D4AA; color: #0A0A0F; border-color: #00D4AA; box-shadow: 0 4px 16px #00D4AA40; }
+  @media print { .lang-switcher { display: none !important; } }
 </style>
 </head>
 <body>
 
 <!-- Print Button -->
-<button class="print-btn no-print" onclick="window.print()">
+<button class="print-btn no-print" id="printBtn" onclick="window.print()">
   🖨️ Export as PDF
 </button>
+
+<!-- Language Switcher -->
+<div class="lang-switcher no-print">
+  <button class="lang-btn active" data-lang="en" onclick="switchLang('en')">EN</button>
+  <button class="lang-btn" data-lang="tr" onclick="switchLang('tr')">TR</button>
+  <button class="lang-btn" data-lang="nl" onclick="switchLang('nl')">NL</button>
+</div>
 
 <!-- ══════════════════════════════════════════
      COVER PAGE
@@ -2938,6 +2968,351 @@ npx expo start --android    <span class="code-cmt"># Android Emulator</span>
 <div class="page-footer">
   PlayRise — Confidential · Internal Use Only · v1.0 · March 2026
 </div>
+
+<!-- ══════════════════════════════════════════
+     LANGUAGE SWITCHER — EN / TR / NL
+════════════════════════════════════════════ -->
+<script>
+(function () {
+'use strict';
+
+/* ── Translation dictionary ─────────────────────────── */
+var T = {
+  en: {
+    'print.btn': '🖨️ Export as PDF',
+    'page.footer': 'PlayRise — Confidential · Internal Use Only · v1.0 · March 2026',
+    'cover.tagline': 'Sports Ladder & Club Management Platform',
+    'cover.doc_ver_label': 'Document Version',
+    'cover.doc_ver_val': '1.0 · March 2026',
+    'cover.audience_label': 'Audience',
+    'cover.audience_val': 'Development Team · Sales Team',
+    'cover.status_label': 'Status',
+    'cover.status_val': '● Active Development',
+    'toc.heading': 'Table of Contents',
+    'toc.s0.title': 'Interactive Demo',         'toc.s0.sub': 'Live clickable UI mockup — explore all screens',
+    'toc.s1.title': 'Product Overview',          'toc.s1.sub': 'Vision · Key differentiators · Supported sports',
+    'toc.s2.title': 'User Types & Roles',        'toc.s2.sub': 'Players · Club Owners · Permissions matrix',
+    'toc.s3.title': 'Technology Stack',          'toc.s3.sub': 'Frontend · Backend · Infrastructure · Dependencies',
+    'toc.s4.title': 'Application Architecture',  'toc.s4.sub': 'Navigation structure · Routing · File structure',
+    'toc.s5.title': 'Database Schema',           'toc.s5.sub': 'All tables · Columns · Relationships · Enums · Views',
+    'toc.s6.title': 'Ladder System — Core Logic','toc.s6.sub': 'How rankings work · Round generation · Position swap · Points',
+    'toc.s7.title': 'Feature Walkthrough — Player',     'toc.s7.sub': 'Signup · Browse clubs · Join ladder · My Matches · Challenges · Profile',
+    'toc.s8.title': 'Feature Walkthrough — Club Owner', 'toc.s8.sub': 'Onboarding · Members · Ladders · Tournaments · Club settings',
+    'toc.s9.title': 'Screen Reference',          'toc.s9.sub': 'Every screen, its purpose, data, and actions',
+    'toc.s10.title': 'Backend Functions & Security', 'toc.s10.sub': 'RPC functions · Triggers · Row Level Security · SECURITY DEFINER',
+    'toc.s11.title': 'Key User Flows',           'toc.s11.sub': 'End-to-end journeys for every major use case',
+    'toc.s12.title': 'Design System & Colors',   'toc.s12.sub': 'Color palette · Sport theming · UI conventions',
+    'toc.s13.title': 'API Reference',            'toc.s13.sub': 'Supabase tables · RPC signatures · Auth endpoints',
+    'toc.s14.title': 'Development Setup',        'toc.s14.sub': 'Installation · Environment · Running the app · Migrations',
+    'toc.s15.title': 'Subscription Plans',       'toc.s15.sub': 'Starter · Pro · Elite — pricing tiers for club sales',
+    's0.label': '00 — INTERACTIVE DEMO',       's0.title': 'Try the App',              's0.desc': 'A fully interactive mockup of PlayRise — tap screens, enter scores, switch tabs, send challenges. Use the navigation buttons or tap directly inside the phone.',
+    's1.label': '01 — PRODUCT OVERVIEW',       's1.title': 'What is PlayRise?',        's1.desc': 'PlayRise is a mobile-first sports management platform that brings automated ladder rankings, private challenges, and club administration to racket sports clubs.',
+    's2.label': '02 — USER TYPES & ROLES',     's2.title': 'Who Uses PlayRise?',       's2.desc': 'PlayRise has two distinct user types, each with a completely separate navigation experience, dashboard, and set of capabilities.',
+    's3.label': '03 — TECHNOLOGY STACK',       's3.title': 'Built On',                 's3.desc': 'PlayRise uses a modern, production-ready stack with minimal infrastructure overhead — the backend is fully managed by Supabase.',
+    's4.label': '04 — APPLICATION ARCHITECTURE','s4.title': 'Structure & Navigation',   's4.desc': "The app is built around Expo Router's file-based routing system, with separate tab groups for each user type.",
+    's5.label': '05 — DATABASE SCHEMA',        's5.title': 'Data Model',               's5.desc': 'PlayRise uses 8 PostgreSQL tables plus 1 view. All tables have Row Level Security enabled.',
+    's6.label': '06 — LADDER LOGIC',           's6.title': 'How the Ranking System Works', 's6.desc': 'The ladder system is fully automated. No admin action is needed once a ladder is created and players start joining.',
+    's7.label': '07 — PLAYER FEATURES',        's7.title': 'Feature Walkthrough: Player',  's7.desc': 'Everything a player can do from signup through daily use.',
+    's8.label': '08 — CLUB OWNER FEATURES',    's8.title': 'Feature Walkthrough: Club Owner', 's8.desc': 'Club owners have a dedicated admin interface separate from the player experience.',
+    's9.label': '09 — SCREEN REFERENCE',       's9.title': 'Every Screen',             's9.desc': 'A complete catalog of all 20+ screens in the app, their routes, and what they do.',
+    's10.label': '10 — BACKEND FUNCTIONS & SECURITY', 's10.title': 'PostgreSQL Functions & RLS', 's10.desc': 'All critical business logic runs inside the database as SECURITY DEFINER functions, ensuring atomicity and bypassing per-user RLS where cross-user writes are needed.',
+    's11.label': '11 — KEY USER FLOWS',        's11.title': 'End-to-End Journeys',     's11.desc': 'Step-by-step walkthroughs of every major action in the app.',
+    's12.label': '12 — DESIGN SYSTEM & COLORS','s12.title': 'Visual Identity',         's12.desc': 'PlayRise uses a dark UI with a teal primary color, consistent across both iOS and Android.',
+    's13.label': '13 — API REFERENCE',         's13.title': 'Supabase API',            's13.desc': 'All API calls are made through the Supabase JS client. No custom REST endpoints.',
+    's14.label': '14 — DEVELOPMENT SETUP',     's14.title': 'Getting Started',         's14.desc': 'How to set up and run the PlayRise project locally.',
+    's15.label': '15 — SUBSCRIPTION PLANS',    's15.title': 'Subscription Plans',      's15.desc': 'Commercial pricing tiers for selling PlayRise to sports clubs and facilities',
+    's15.intro': 'PlayRise is sold as a SaaS subscription to clubs and sports facilities. Each club gets a dedicated workspace — their own members, ladders, tournaments, and branding. The three tiers below are designed to match clubs by size: from small recreational clubs just getting started, to large multi-sport facilities needing full automation and priority support.',
+    's15.billing_info': '<strong>Billing model:</strong> All plans are billed yearly — one flat annual payment. Pricing is per club, not per member — a club pays one fee regardless of how many players sign up. All plans include onboarding support.',
+    's15.starter.tagline': 'For small clubs testing the waters with their first digital ladder.',
+    's15.starter.billing': 'Billed yearly · one payment',
+    's15.pro.tagline': 'For active clubs running multiple sports and competitive ladders year-round.',
+    's15.pro.billing': 'Billed yearly · one payment',
+    's15.elite.tagline': 'Unlimited everything — built for large clubs, academies, and multi-venue facilities.',
+    's15.elite.billing': 'Billed yearly · one payment',
+    's15.addons.desc': 'Any plan can be extended with the following paid add-ons, billed monthly.',
+  },
+  tr: {
+    'print.btn': '🖨️ PDF Olarak Dışa Aktar',
+    'page.footer': 'PlayRise — Gizli · Yalnızca İç Kullanım · v1.0 · Mart 2026',
+    'cover.tagline': 'Spor Sıralama ve Kulüp Yönetim Platformu',
+    'cover.doc_ver_label': 'Belge Sürümü',
+    'cover.doc_ver_val': '1.0 · Mart 2026',
+    'cover.audience_label': 'Hedef Kitle',
+    'cover.audience_val': 'Geliştirme Ekibi · Satış Ekibi',
+    'cover.status_label': 'Durum',
+    'cover.status_val': '● Aktif Geliştirme',
+    'toc.heading': 'İçindekiler',
+    'toc.s0.title': 'İnteraktif Demo',              'toc.s0.sub': 'Canlı tıklanabilir UI mockup — tüm ekranları keşfedin',
+    'toc.s1.title': 'Ürün Genel Bakışı',            'toc.s1.sub': 'Vizyon · Temel farklılıklar · Desteklenen sporlar',
+    'toc.s2.title': 'Kullanıcı Türleri ve Roller',  'toc.s2.sub': 'Oyuncular · Kulüp Sahipleri · İzin matrisi',
+    'toc.s3.title': 'Teknoloji Altyapısı',           'toc.s3.sub': 'Frontend · Backend · Altyapı · Bağımlılıklar',
+    'toc.s4.title': 'Uygulama Mimarisi',             'toc.s4.sub': 'Navigasyon yapısı · Yönlendirme · Dosya yapısı',
+    'toc.s5.title': 'Veritabanı Şeması',             'toc.s5.sub': "Tüm tablolar · Sütunlar · İlişkiler · Enum'lar · Görünümler",
+    'toc.s6.title': 'Sıralama Sistemi — Temel Mantık','toc.s6.sub': 'Sıralama nasıl çalışır · Tur oluşturma · Pozisyon değişimi · Puanlar',
+    'toc.s7.title': 'Özellik Tanıtımı — Oyuncu',    'toc.s7.sub': 'Kayıt · Kulüp ara · Sıralamaya katıl · Maçlarım · Meydan okumalar · Profil',
+    'toc.s8.title': 'Özellik Tanıtımı — Kulüp Sahibi','toc.s8.sub': 'Karşılama · Üyeler · Sıralamalar · Turnuvalar · Kulüp ayarları',
+    'toc.s9.title': 'Ekran Referansı',               'toc.s9.sub': 'Her ekran, amacı, verisi ve eylemleri',
+    'toc.s10.title': 'Backend Fonksiyonları ve Güvenlik','toc.s10.sub': 'RPC fonksiyonları · Tetikleyiciler · Satır Düzeyi Güvenlik · SECURITY DEFINER',
+    'toc.s11.title': 'Temel Kullanıcı Akışları',    'toc.s11.sub': 'Her ana kullanım senaryosu için uçtan uca yolculuklar',
+    'toc.s12.title': 'Tasarım Sistemi ve Renkler',  'toc.s12.sub': 'Renk paleti · Spor temaları · UI kuralları',
+    'toc.s13.title': 'API Referansı',                'toc.s13.sub': "Supabase tabloları · RPC imzaları · Auth endpoint'leri",
+    'toc.s14.title': 'Geliştirme Kurulumu',          'toc.s14.sub': 'Kurulum · Ortam · Uygulamayı çalıştırma · Migrasyonlar',
+    'toc.s15.title': 'Abonelik Planları',            'toc.s15.sub': 'Starter · Pro · Elite — kulüp satışları için fiyatlandırma kademeleri',
+    's0.label': '00 — İNTERAKTİF DEMO',          's0.title': 'Uygulamayı Dene',             's0.desc': "PlayRise'ın tamamen interaktif bir mockup'ı — ekranlara dokunun, skorları girin, sekmeleri değiştirin, meydan okumalar gönderin. Navigasyon düğmelerini kullanın veya doğrudan telefon içine dokunun.",
+    's1.label': '01 — ÜRÜN GENEL BAKIŞ',         's1.title': 'PlayRise Nedir?',             's1.desc': 'PlayRise, raket sporları kulüplerine otomatik sıralama sistemi, özel meydan okumalar ve kulüp yönetimi sunan mobil odaklı bir spor yönetim platformudur.',
+    's2.label': '02 — KULLANICI TÜRLERİ VE ROLLER','s2.title': "PlayRise'ı Kim Kullanır?",   's2.desc': "PlayRise'ın iki farklı kullanıcı türü vardır; her biri tamamen ayrı bir navigasyon deneyimi, gösterge paneli ve özellikler setine sahiptir.",
+    's3.label': '03 — TEKNOLOJİ ALTYAPISI',      's3.title': 'Üzerine İnşa Edildi',         's3.desc': 'PlayRise, minimum altyapı yükü ile modern ve üretime hazır bir stack kullanır — backend tamamen Supabase tarafından yönetilir.',
+    's4.label': '04 — UYGULAMA MİMARİSİ',        's4.title': 'Yapı ve Navigasyon',          's4.desc': "Uygulama, her kullanıcı türü için ayrı sekme grupları ile Expo Router'ın dosya tabanlı yönlendirme sistemi üzerine inşa edilmiştir.",
+    's5.label': '05 — VERİTABANI ŞEMASI',        's5.title': 'Veri Modeli',                 's5.desc': 'PlayRise, 8 PostgreSQL tablosu ve 1 view kullanır. Tüm tablolarda Satır Düzeyi Güvenlik etkinleştirilmiştir.',
+    's6.label': '06 — SIRALAMA MANTIĞI',          's6.title': 'Sıralama Sistemi Nasıl Çalışır','s6.desc': 'Sıralama sistemi tamamen otomatiktir. Bir sıralama oluşturulup oyuncular katılmaya başladıktan sonra yönetici müdahalesine gerek yoktur.',
+    's7.label': '07 — OYUNCU ÖZELLİKLERİ',       's7.title': 'Özellik Tanıtımı: Oyuncu',    's7.desc': 'Kayıttan günlük kullanıma kadar bir oyuncunun yapabileceği her şey.',
+    's8.label': '08 — KULÜP SAHİBİ ÖZELLİKLERİ','s8.title': 'Özellik Tanıtımı: Kulüp Sahibi','s8.desc': 'Kulüp sahiplerinin oyuncu deneyiminden ayrı, özel bir yönetim arayüzü vardır.',
+    's9.label': '09 — EKRAN REFERANSI',           's9.title': 'Her Ekran',                   's9.desc': "Uygulamadaki 20'den fazla ekranın, rotalarının ve işlevlerinin tam kataloğu.",
+    's10.label': '10 — BACKEND FONKSİYONLARI VE GÜVENLİK','s10.title': 'PostgreSQL Fonksiyonları ve RLS','s10.desc': 'Tüm kritik iş mantığı, atomikliği sağlayan SECURITY DEFINER fonksiyonları olarak veritabanında çalışır.',
+    's11.label': '11 — TEMEL KULLANICI AKIŞLARI', 's11.title': 'Uçtan Uca Yolculuklar',      's11.desc': 'Uygulamadaki her önemli eylemin adım adım açıklamaları.',
+    's12.label': '12 — TASARIM SİSTEMİ VE RENKLER','s12.title': 'Görsel Kimlik',             's12.desc': "PlayRise, hem iOS hem de Android'de tutarlı bir şekilde ana renk olarak turkuaz kullanan koyu öncelikli bir UI kullanır.",
+    's13.label': '13 — API REFERANSI',            's13.title': 'Supabase API',                's13.desc': "Tüm API çağrıları Supabase JS istemcisi üzerinden yapılır. Özel REST endpoint'leri yoktur.",
+    's14.label': '14 — GELİŞTİRME KURULUMU',     's14.title': 'Başlarken',                   's14.desc': 'PlayRise projesini yerel olarak nasıl kurup çalıştıracağınız.',
+    's15.label': '15 — ABONELİK PLANLARI',        's15.title': 'Abonelik Planları',           's15.desc': "PlayRise'ı spor kulüplerine ve tesislere satmak için ticari fiyatlandırma kademeleri",
+    's15.intro': 'PlayRise, kulüplere ve spor tesislerine SaaS aboneliği olarak satılmaktadır. Her kulüp, kendi üyeleri, sıralamaları, turnuvaları ve markalamasıyla özel bir çalışma alanına sahip olur. Aşağıdaki üç kademe, kulüpleri büyüklüklerine göre eşleştirmek için tasarlanmıştır: yeni başlayan küçük eğlence kulüplerinden tam otomasyon ve öncelikli destek ihtiyacı duyan büyük çok sporlu tesislere kadar.',
+    's15.billing_info': '<strong>Faturalama modeli:</strong> Tüm planlar yıllık faturalandırılır — tek bir yıllık ödeme. Fiyatlandırma kulüp başınadır, üye başına değil — bir kulüp kaç oyuncu kayıt olursa olsun tek bir ücret öder. Tüm planlar karşılama desteği içerir.',
+    's15.starter.tagline': 'İlk dijital sıralamalarını deneyen küçük kulüpler için.',
+    's15.starter.billing': 'Yıllık faturalandırma · tek ödeme',
+    's15.pro.tagline': 'Tüm yıl boyunca birden fazla spor ve rekabetçi sıralamaları yöneten aktif kulüpler için.',
+    's15.pro.billing': 'Yıllık faturalandırma · tek ödeme',
+    's15.elite.tagline': 'Her şey sınırsız — büyük kulüpler, akademiler ve çok mekanlı tesisler için.',
+    's15.elite.billing': 'Yıllık faturalandırma · tek ödeme',
+    's15.addons.desc': 'Her plan, aylık faturalandırılan aşağıdaki ücretli eklentilerle genişletilebilir.',
+  },
+  nl: {
+    'print.btn': '🖨️ Exporteren als PDF',
+    'page.footer': 'PlayRise — Vertrouwelijk · Alleen voor intern gebruik · v1.0 · Maart 2026',
+    'cover.tagline': 'Sport Ladder & Club Beheersplatform',
+    'cover.doc_ver_label': 'Documentversie',
+    'cover.doc_ver_val': '1.0 · Maart 2026',
+    'cover.audience_label': 'Doelgroep',
+    'cover.audience_val': 'Ontwikkelteam · Verkoopteam',
+    'cover.status_label': 'Status',
+    'cover.status_val': '● Actieve Ontwikkeling',
+    'toc.heading': 'Inhoudsopgave',
+    'toc.s0.title': 'Interactieve Demo',            'toc.s0.sub': 'Live klikbare UI-mockup — verken alle schermen',
+    'toc.s1.title': 'Productoverzicht',             'toc.s1.sub': 'Visie · Belangrijkste onderscheidingen · Ondersteunde sporten',
+    'toc.s2.title': 'Gebruikerstypen & Rollen',     'toc.s2.sub': 'Spelers · Clubeigenaren · Rechtentabel',
+    'toc.s3.title': 'Technologiestack',             'toc.s3.sub': 'Frontend · Backend · Infrastructuur · Afhankelijkheden',
+    'toc.s4.title': 'Applicatiearchitectuur',       'toc.s4.sub': 'Navigatiestructuur · Routering · Bestandsstructuur',
+    'toc.s5.title': 'Databaseschema',               'toc.s5.sub': 'Alle tabellen · Kolommen · Relaties · Enums · Views',
+    'toc.s6.title': 'Laddersysteem — Kernlogica',   'toc.s6.sub': 'Hoe ranglijsten werken · Rondes genereren · Positiewisseling · Punten',
+    'toc.s7.title': 'Functierondleiding — Speler',  'toc.s7.sub': 'Aanmelden · Clubs bekijken · Ladder toetreden · Mijn Wedstrijden · Uitdagingen · Profiel',
+    'toc.s8.title': 'Functierondleiding — Clubeigenaar','toc.s8.sub': 'Onboarding · Leden · Ladders · Toernooien · Clubinstellingen',
+    'toc.s9.title': 'Schermreferentie',             'toc.s9.sub': 'Elk scherm, zijn doel, gegevens en acties',
+    'toc.s10.title': 'Backendfuncties & Beveiliging','toc.s10.sub': 'RPC-functies · Triggers · Rijniveaubeveiliging · SECURITY DEFINER',
+    'toc.s11.title': 'Belangrijkste Gebruikersstromen','toc.s11.sub': 'End-to-end trajecten voor elk belangrijk gebruiksscenario',
+    'toc.s12.title': 'Ontwerpsysteem & Kleuren',    'toc.s12.sub': "Kleurenpalet · Sportthema's · UI-conventies",
+    'toc.s13.title': 'API-referentie',              'toc.s13.sub': 'Supabase-tabellen · RPC-handtekeningen · Auth-endpoints',
+    'toc.s14.title': 'Ontwikkelomgeving',            'toc.s14.sub': 'Installatie · Omgeving · App starten · Migraties',
+    'toc.s15.title': 'Abonnementenplannen',          'toc.s15.sub': 'Starter · Pro · Elite — prijsniveaus voor clubverkoop',
+    's0.label': '00 — INTERACTIEVE DEMO',        's0.title': 'Probeer de App',              's0.desc': 'Een volledig interactieve mockup van PlayRise — tik op schermen, voer scores in, wissel van tabbladen, stuur uitdagingen. Gebruik de navigatieknoppen of tik direct op de telefoon.',
+    's1.label': '01 — PRODUCTOVERZICHT',         's1.title': 'Wat is PlayRise?',            's1.desc': 'PlayRise is een mobile-first sportbeheerplatform dat geautomatiseerde ladder-ranglijsten, privé-uitdagingen en clubbeheer biedt aan racketsporten clubs.',
+    's2.label': '02 — GEBRUIKERSTYPEN & ROLLEN', 's2.title': 'Wie Gebruikt PlayRise?',      's2.desc': 'PlayRise heeft twee afzonderlijke gebruikerstypen, elk met een volledig aparte navigatie-ervaring, dashboard en reeks mogelijkheden.',
+    's3.label': '03 — TECHNOLOGIESTACK',         's3.title': 'Gebouwd Op',                  's3.desc': 'PlayRise gebruikt een moderne, productieklare stack met minimale infrastructuuroverhead — de backend wordt volledig beheerd door Supabase.',
+    's4.label': '04 — APPLICATIEARCHITECTUUR',   's4.title': 'Structuur & Navigatie',       's4.desc': "De app is gebouwd rondom Expo Routers bestandsgebaseerd routeringssysteem, met aparte tabgroepen voor elk gebruikerstype.",
+    's5.label': '05 — DATABASESCHEMA',           's5.title': 'Gegevensmodel',               's5.desc': 'PlayRise gebruikt 8 PostgreSQL-tabellen plus 1 view. Alle tabellen hebben Rijniveaubeveiliging ingeschakeld.',
+    's6.label': '06 — LADDERLOGICA',             's6.title': 'Hoe het Ranglijstsysteem Werkt','s6.desc': 'Het laddersysteem is volledig geautomatiseerd. Er is geen beheerdersactie nodig zodra een ladder is aangemaakt en spelers beginnen deel te nemen.',
+    's7.label': '07 — SPELERSFUNCTIES',          's7.title': 'Functierondleiding: Speler',   's7.desc': 'Alles wat een speler kan doen vanaf aanmelding tot dagelijks gebruik.',
+    's8.label': '08 — CLUBEIGENAARSFUNCTIES',    's8.title': 'Functierondleiding: Clubeigenaar','s8.desc': 'Clubeigenaren hebben een speciale beheerdersinterface, gescheiden van de spelervaring.',
+    's9.label': '09 — SCHERMREFERENTIE',         's9.title': 'Elk Scherm',                  's9.desc': 'Een volledig overzicht van alle 20+ schermen in de app, hun routes en wat ze doen.',
+    's10.label': '10 — BACKENDFUNCTIES & BEVEILIGING','s10.title': 'PostgreSQL-functies & RLS','s10.desc': 'Alle kritieke bedrijfslogica wordt uitgevoerd in de database als SECURITY DEFINER-functies, die atomiciteit garanderen.',
+    's11.label': '11 — BELANGRIJKSTE GEBRUIKERSSTROMEN','s11.title': 'End-to-End Trajecten', 's11.desc': 'Stapsgewijze doorlopen van elke grote actie in de app.',
+    's12.label': '12 — ONTWERPSYSTEEM & KLEUREN','s12.title': 'Visuele Identiteit',         's12.desc': 'PlayRise gebruikt een donkere UI met een groenblauw primaire kleur, consistent op zowel iOS als Android.',
+    's13.label': '13 — API-REFERENTIE',          's13.title': 'Supabase API',               's13.desc': 'Alle API-aanroepen worden gedaan via de Supabase JS-client. Geen aangepaste REST-endpoints.',
+    's14.label': '14 — ONTWIKKELOMGEVING',       's14.title': 'Aan de Slag',                's14.desc': 'Hoe u het PlayRise-project lokaal kunt instellen en uitvoeren.',
+    's15.label': '15 — ABONNEMENTENPLANNEN',     's15.title': 'Abonnementenplannen',        's15.desc': 'Commerciële prijsniveaus voor de verkoop van PlayRise aan sportclubs en faciliteiten',
+    's15.intro': 'PlayRise wordt verkocht als SaaS-abonnement aan clubs en sportfaciliteiten. Elke club krijgt een speciale werkruimte — hun eigen leden, ladders, toernooien en branding. De drie onderstaande niveaus zijn ontworpen om clubs op grootte te matchen: van kleine recreatieve clubs die net beginnen, tot grote multi-sportfaciliteiten die volledige automatisering en prioriteitsondersteuning nodig hebben.',
+    's15.billing_info': '<strong>Factuurmodel:</strong> Alle plannen worden jaarlijks gefactureerd — één jaarlijkse betaling. Prijzen zijn per club, niet per lid — een club betaalt één vast bedrag ongeacht hoeveel spelers zich aanmelden. Alle plannen bevatten ondersteuning bij de onboarding.',
+    's15.starter.tagline': 'Voor kleine clubs die hun eerste digitale ladder uitproberen.',
+    's15.starter.billing': 'Jaarlijks gefactureerd · één betaling',
+    's15.pro.tagline': 'Voor actieve clubs die het hele jaar door meerdere sporten en competitieve ladders runnen.',
+    's15.pro.billing': 'Jaarlijks gefactureerd · één betaling',
+    's15.elite.tagline': 'Onbeperkt alles — gebouwd voor grote clubs, academies en multi-locatiefaciliteiten.',
+    's15.elite.billing': 'Jaarlijks gefactureerd · één betaling',
+    's15.addons.desc': 'Elk plan kan worden uitgebreid met de volgende betaalde add-ons, maandelijks gefactureerd.',
+  }
+};
+
+/* ── H3 heading translations (matched by English text) ── */
+var H3 = {
+  tr: {
+    'Core Value Proposition':'Temel Değer Önerisi','Supported Sports':'Desteklenen Sporlar','Platform':'Platform',
+    'Role Detection':'Rol Tespiti','Club Roles (within a Club)':'Kulüp Rolleri (Kulüp İçinde)','Challenge Status Flow':'Meydan Okuma Durum Akışı',
+    'Frontend':'Frontend','Backend (Supabase)':'Backend (Supabase)','Key Architectural Choices':'Temel Mimari Tercihler',
+    'Navigation Tree':'Navigasyon Ağacı','Auth & Routing Logic':'Kimlik Doğrulama ve Yönlendirme Mantığı','Project File Structure':'Proje Dosya Yapısı',
+    'Entity Relationship Overview':'Varlık İlişki Genel Bakışı','Table: profiles':'Tablo: profiles','Table: clubs':'Tablo: clubs',
+    'Table: ladders':'Tablo: ladders','Table: ladder_entries':'Tablo: ladder_entries','Table: matches':'Tablo: matches',
+    'Table: challenges':'Tablo: challenges','View: clubs_with_member_count':'Görünüm: clubs_with_member_count',
+    'Ranking Model':'Sıralama Modeli','Visual Example':'Görsel Örnek','Round Generation':'Tur Oluşturma',
+    'Position Swap Logic':'Pozisyon Değiştirme Mantığı','Points System':'Puan Sistemi','Auto-Enrollment':'Otomatik Kayıt',
+    '1. Signup & Login':'1. Kayıt ve Giriş','2. Browse Clubs':'2. Kulüplere Gözat','3. Join a Club':'3. Kulübe Katıl',
+    '4. Join a Ladder':'4. Sıralamaya Katıl','5. My Matches — Three Tabs':'5. Maçlarım — Üç Sekme',
+    '6. Send a Challenge':'6. Meydan Okuma Gönder','7. Submit a Match Result':'7. Maç Sonucu Gönder','8. Player Profile':'8. Oyuncu Profili',
+    '1. Club Onboarding Wizard':'1. Kulüp Karşılama Sihirbazı','2. Members Tab':'2. Üyeler Sekmesi',
+    '3. Ladders Tab':'3. Sıralamalar Sekmesi','4. Ladder Management Screen':'4. Sıralama Yönetim Ekranı',
+    '5. Tournaments Tab':'5. Turnuvalar Sekmesi','6. Club Settings Tab':'6. Kulüp Ayarları Sekmesi',
+    'Authentication Screens':'Kimlik Doğrulama Ekranları','Player Screens':'Oyuncu Ekranları','Owner Screens':'Sahip Ekranları','Shared Stack Screens':'Paylaşılan Stack Ekranları',
+    'record_match_result() — Core RPC':'record_match_result() — Temel RPC',
+    'generate_ladder_round() — Auto Round Creator':'generate_ladder_round() — Otomatik Tur Oluşturucu',
+    'handle_new_user() — Signup Trigger':'handle_new_user() — Kayıt Tetikleyicisi',
+    'trg_auto_round_on_join() — Join Trigger':'trg_auto_round_on_join() — Katılım Tetikleyicisi',
+    'Row Level Security (RLS)':'Satır Düzeyi Güvenlik (RLS)',
+    'Flow 1: New Player Signup to First Match':'Akış 1: Yeni Oyuncu Kaydından İlk Maça',
+    'Flow 2: Club Owner Onboarding':'Akış 2: Kulüp Sahibi Karşılama',
+    'Flow 3: Private Challenge':'Akış 3: Özel Meydan Okuma',
+    'Flow 4: Position Swap (Lower-Ranked Wins)':'Akış 4: Pozisyon Değişimi (Alt Sıradaki Kazanır)',
+    'Color Palette':'Renk Paleti','Sport Theming':'Spor Temaları','UI Conventions':'UI Kuralları',
+    'Supabase Client Config':'Supabase İstemci Yapılandırması','Key RPC Calls':'Temel RPC Çağrıları',
+    'Common Table Queries':'Yaygın Tablo Sorguları','Auth Calls':'Kimlik Doğrulama Çağrıları',
+    'Prerequisites':'Ön Koşullar','Installation':'Kurulum','Environment Variables':'Ortam Değişkenleri',
+    'Database Setup':'Veritabanı Kurulumu','Running the App':'Uygulamayı Çalıştırma',
+    'Seeding Test Data':'Test Verisi Oluşturma','Migration Notes':'Migrasyon Notları','Project Scripts':'Proje Komutları',
+    'Feature Comparison':'Özellik Karşılaştırması','Available Add-ons':'Mevcut Eklentiler',
+    'Sales Notes for the Team':'Ekip İçin Satış Notları','Pricing Summary':'Fiyatlandırma Özeti',
+  },
+  nl: {
+    'Core Value Proposition':'Kernwaardepropositie','Supported Sports':'Ondersteunde Sporten','Platform':'Platform',
+    'Role Detection':'Roldetectie','Club Roles (within a Club)':'Clubrollen (binnen een Club)','Challenge Status Flow':'Uitdagingsstatusverloop',
+    'Frontend':'Frontend','Backend (Supabase)':'Backend (Supabase)','Key Architectural Choices':'Belangrijkste Architectuurkeuzes',
+    'Navigation Tree':'Navigatieboom','Auth & Routing Logic':'Authenticatie & Routeringslogica','Project File Structure':'Projectbestandsstructuur',
+    'Entity Relationship Overview':'Entiteitsrelatie-overzicht','Table: profiles':'Tabel: profiles','Table: clubs':'Tabel: clubs',
+    'Table: ladders':'Tabel: ladders','Table: ladder_entries':'Tabel: ladder_entries','Table: matches':'Tabel: matches',
+    'Table: challenges':'Tabel: challenges','View: clubs_with_member_count':'View: clubs_with_member_count',
+    'Ranking Model':'Ranglijstmodel','Visual Example':'Visueel Voorbeeld','Round Generation':'Ronde Generatie',
+    'Position Swap Logic':'Positiewissellogica','Points System':'Puntensysteem','Auto-Enrollment':'Automatische Inschrijving',
+    '1. Signup & Login':'1. Aanmelden & Inloggen','2. Browse Clubs':'2. Clubs Bekijken','3. Join a Club':'3. Een Club Toetreden',
+    '4. Join a Ladder':'4. Een Ladder Toetreden','5. My Matches — Three Tabs':'5. Mijn Wedstrijden — Drie Tabbladen',
+    '6. Send a Challenge':'6. Een Uitdaging Sturen','7. Submit a Match Result':'7. Een Wedstrijdresultaat Indienen','8. Player Profile':'8. Spelersprofiel',
+    '1. Club Onboarding Wizard':'1. Club Onboarding Wizard','2. Members Tab':'2. Leden Tabblad',
+    '3. Ladders Tab':'3. Ladders Tabblad','4. Ladder Management Screen':'4. Ladderbeheer Scherm',
+    '5. Tournaments Tab':'5. Toernooien Tabblad','6. Club Settings Tab':'6. Clubinstellingen Tabblad',
+    'Authentication Screens':'Authenticatieschermen','Player Screens':'Spelersschermen','Owner Screens':'Eigenaarschermen','Shared Stack Screens':'Gedeelde Stack Schermen',
+    'record_match_result() — Core RPC':'record_match_result() — Kern RPC',
+    'generate_ladder_round() — Auto Round Creator':'generate_ladder_round() — Automatische Ronde Generator',
+    'handle_new_user() — Signup Trigger':'handle_new_user() — Aanmelding Trigger',
+    'trg_auto_round_on_join() — Join Trigger':'trg_auto_round_on_join() — Toetreding Trigger',
+    'Row Level Security (RLS)':'Rijniveaubeveiliging (RLS)',
+    'Flow 1: New Player Signup to First Match':'Stroom 1: Nieuwe Speler Aanmelding tot Eerste Wedstrijd',
+    'Flow 2: Club Owner Onboarding':'Stroom 2: Clubeigenaar Onboarding',
+    'Flow 3: Private Challenge':'Stroom 3: Privé-uitdaging',
+    'Flow 4: Position Swap (Lower-Ranked Wins)':'Stroom 4: Positiewisseling (Lager Gerangschikte Wint)',
+    'Color Palette':'Kleurenpalet','Sport Theming':"Sportthema's",'UI Conventions':'UI-conventies',
+    'Supabase Client Config':'Supabase Clientconfiguratie','Key RPC Calls':'Belangrijkste RPC-aanroepen',
+    "Common Table Queries":"Veelgebruikte Tabelquery's",'Auth Calls':'Authenticatie-aanroepen',
+    'Prerequisites':'Vereisten','Installation':'Installatie','Environment Variables':'Omgevingsvariabelen',
+    'Database Setup':'Database Instellen','Running the App':'De App Uitvoeren',
+    'Seeding Test Data':'Testgegevens Aanmaken','Migration Notes':'Migratienotities','Project Scripts':'Projectscripts',
+    'Feature Comparison':'Functievergelijking','Available Add-ons':'Beschikbare Uitbreidingen',
+    'Sales Notes for the Team':'Verkoopnotities voor het Team','Pricing Summary':'Prijsoverzicht',
+  }
+};
+
+/* ── CSS selector → [key, useInnerHTML] mappings ─────── */
+var MAPS = [
+  ['#printBtn',                                    'print.btn',              true],
+  ['.page-footer',                                 'page.footer',            false],
+  ['.cover-tagline',                               'cover.tagline',          false],
+  ['.cover-meta-row:nth-child(1) span:nth-child(1)','cover.doc_ver_label',  false],
+  ['.cover-meta-row:nth-child(1) span:nth-child(2)','cover.doc_ver_val',    false],
+  ['.cover-meta-row:nth-child(2) span:nth-child(1)','cover.audience_label', false],
+  ['.cover-meta-row:nth-child(2) span:nth-child(2)','cover.audience_val',   false],
+  ['.cover-meta-row:nth-child(3) span:nth-child(1)','cover.status_label',   false],
+  ['.cover-meta-row:nth-child(3) span:nth-child(2)','cover.status_val',     false],
+  ['.toc-page h2',                                 'toc.heading',            false],
+  ['.toc-page > div:nth-child(2) .toc-title',      'toc.s0.title',          false],
+  ['.toc-page > div:nth-child(2) .toc-sub',        'toc.s0.sub',            false],
+  ['.toc-page > div:nth-child(3) .toc-title',      'toc.s1.title',          false],
+  ['.toc-page > div:nth-child(3) .toc-sub',        'toc.s1.sub',            false],
+  ['.toc-page > div:nth-child(4) .toc-title',      'toc.s2.title',          false],
+  ['.toc-page > div:nth-child(4) .toc-sub',        'toc.s2.sub',            false],
+  ['.toc-page > div:nth-child(5) .toc-title',      'toc.s3.title',          false],
+  ['.toc-page > div:nth-child(5) .toc-sub',        'toc.s3.sub',            false],
+  ['.toc-page > div:nth-child(6) .toc-title',      'toc.s4.title',          false],
+  ['.toc-page > div:nth-child(6) .toc-sub',        'toc.s4.sub',            false],
+  ['.toc-page > div:nth-child(7) .toc-title',      'toc.s5.title',          false],
+  ['.toc-page > div:nth-child(7) .toc-sub',        'toc.s5.sub',            false],
+  ['.toc-page > div:nth-child(8) .toc-title',      'toc.s6.title',          false],
+  ['.toc-page > div:nth-child(8) .toc-sub',        'toc.s6.sub',            false],
+  ['.toc-page > div:nth-child(9) .toc-title',      'toc.s7.title',          false],
+  ['.toc-page > div:nth-child(9) .toc-sub',        'toc.s7.sub',            false],
+  ['.toc-page > div:nth-child(10) .toc-title',     'toc.s8.title',          false],
+  ['.toc-page > div:nth-child(10) .toc-sub',       'toc.s8.sub',            false],
+  ['.toc-page > div:nth-child(11) .toc-title',     'toc.s9.title',          false],
+  ['.toc-page > div:nth-child(11) .toc-sub',       'toc.s9.sub',            false],
+  ['.toc-page > div:nth-child(12) .toc-title',     'toc.s10.title',         false],
+  ['.toc-page > div:nth-child(12) .toc-sub',       'toc.s10.sub',           false],
+  ['.toc-page > div:nth-child(13) .toc-title',     'toc.s11.title',         false],
+  ['.toc-page > div:nth-child(13) .toc-sub',       'toc.s11.sub',           false],
+  ['.toc-page > div:nth-child(14) .toc-title',     'toc.s12.title',         false],
+  ['.toc-page > div:nth-child(14) .toc-sub',       'toc.s12.sub',           false],
+  ['.toc-page > div:nth-child(15) .toc-title',     'toc.s13.title',         false],
+  ['.toc-page > div:nth-child(15) .toc-sub',       'toc.s13.sub',           false],
+  ['.toc-page > div:nth-child(16) .toc-title',     'toc.s14.title',         false],
+  ['.toc-page > div:nth-child(16) .toc-sub',       'toc.s14.sub',           false],
+  ['.toc-page > div:nth-child(17) .toc-title',     'toc.s15.title',         false],
+  ['.toc-page > div:nth-child(17) .toc-sub',       'toc.s15.sub',           false],
+  // Section 15 specific content
+  ['#s15 .info-box',                               's15.billing_info',       true],
+  ['#s15 > p',                                     's15.intro',              false],
+  ['#s15 .card-starter .pricing-tagline',          's15.starter.tagline',   false],
+  ['#s15 .card-starter .pricing-billing',          's15.starter.billing',   false],
+  ['#s15 .card-pro .pricing-tagline',              's15.pro.tagline',       false],
+  ['#s15 .card-pro .pricing-billing',              's15.pro.billing',       false],
+  ['#s15 .card-elite .pricing-tagline',            's15.elite.tagline',     false],
+  ['#s15 .card-elite .pricing-billing',            's15.elite.billing',     false],
+  ['#s15 .addon-grid + p',                         's15.addons.desc',       false],
+];
+
+// Auto-generate section label / title / desc mappings for s0–s15
+for (var i = 0; i <= 15; i++) {
+  var sid = '#s' + i;
+  MAPS.push([sid + ' .section-label', 's' + i + '.label', false]);
+  MAPS.push([sid + ' h2',             's' + i + '.title', false]);
+  MAPS.push([sid + ' .section-desc',  's' + i + '.desc',  false]);
+}
+
+/* ── Apply translations ─────────────────────────────── */
+function applyLang(lang) {
+  var ld = T[lang] || T.en;
+  MAPS.forEach(function(m) {
+    var sel = m[0], key = m[1], html = m[2];
+    var val = ld[key] !== undefined ? ld[key] : (T.en[key] || '');
+    if (!val) return;
+    document.querySelectorAll(sel).forEach(function(el) {
+      if (html) el.innerHTML = val; else el.textContent = val;
+    });
+  });
+  // H3 headings — matched by stored English text
+  document.querySelectorAll('h3').forEach(function(el) {
+    if (!el.dataset.origText) el.dataset.origText = el.textContent.trim();
+    var eng = el.dataset.origText;
+    var tr  = H3[lang] && H3[lang][eng];
+    el.textContent = tr || eng;
+  });
+}
+
+/* ── Public API ─────────────────────────────────────── */
+window.switchLang = function(lang) {
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  applyLang(lang);
+  try { localStorage.setItem('pr_lang', lang); } catch(e) {}
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = 'en';
+  try { saved = localStorage.getItem('pr_lang') || 'en'; } catch(e) {}
+  window.switchLang(saved);
+});
+})();
+</script>
 
 </body>
 </html>
