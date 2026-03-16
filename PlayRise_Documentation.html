@@ -720,6 +720,11 @@
     <a href="#s14" class="toc-item"><span class="toc-num">14</span><span class="toc-title">Development Setup</span></a>
     <div class="toc-sub">Installation · Environment · Running the app · Migrations</div>
   </div>
+
+  <div class="toc-section">
+    <a href="#s15" class="toc-item"><span class="toc-num" style="color:#FF9F43;">15</span><span class="toc-title">Subscription Plans</span></a>
+    <div class="toc-sub">Starter · Pro · Elite — pricing tiers for club sales</div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -2453,6 +2458,479 @@ npx expo start --android    <span class="code-cmt"># Android Emulator</span>
     <div style="font-size: 12px; color: #aaa;">
       React Native · Expo SDK 55 · Supabase · TypeScript<br/>
       Documentation generated March 2026
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 15 — SUBSCRIPTION PLANS
+════════════════════════════════════════════ -->
+<style>
+  /* Pricing card grid */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 36px 0;
+  }
+  @media (max-width: 900px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+  }
+
+  .pricing-card {
+    border-radius: 20px;
+    border: 1.5px solid #e8eaf0;
+    padding: 32px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    background: #fff;
+    transition: box-shadow .2s;
+  }
+  .pricing-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,.08); }
+
+  .pricing-card.card-starter { border-color: #e8eaf0; }
+  .pricing-card.card-pro     { border-color: #00D4AA; box-shadow: 0 8px 32px #00D4AA18; }
+  .pricing-card.card-elite   { border-color: #7B61FF; box-shadow: 0 8px 32px #7B61FF18; background: linear-gradient(160deg,#fafaff,#fff); }
+
+  .pricing-badge {
+    position: absolute;
+    top: -13px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .badge-popular  { background: #00D4AA; color: #fff; }
+  .badge-best     { background: #7B61FF; color: #fff; }
+
+  .pricing-tier-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .pricing-tier-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+  .pricing-tier-name.teal   { color: #00A882; }
+  .pricing-tier-name.green  { color: #00D4AA; }
+  .pricing-tier-name.purple { color: #7B61FF; }
+
+  .pricing-tagline {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 20px;
+    min-height: 36px;
+  }
+
+  .pricing-price {
+    font-size: 42px;
+    font-weight: 900;
+    color: #1a1a2e;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .pricing-price sup { font-size: 20px; font-weight: 700; vertical-align: super; }
+  .pricing-price sub { font-size: 14px; font-weight: 400; color: #888; vertical-align: baseline; }
+
+  .pricing-billing {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 24px;
+  }
+
+  .pricing-divider {
+    border: none;
+    border-top: 1px solid #f0f2f5;
+    margin: 0 0 20px;
+  }
+
+  .pricing-features {
+    list-style: none;
+    margin: 0 0 28px;
+    padding: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pricing-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.5;
+  }
+
+  .pricing-features li .feat-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+  .pricing-features li .feat-icon.check  { color: #00D4AA; }
+  .pricing-features li .feat-icon.cross  { color: #ccc; }
+  .pricing-features li .feat-icon.check-purple { color: #7B61FF; }
+
+  .pricing-features li.feat-dim { color: #bbb; }
+
+  .pricing-cta {
+    display: block;
+    text-align: center;
+    padding: 13px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: default;
+  }
+  .cta-starter { background: #f5f5f7; color: #555; border-color: #e8eaf0; }
+  .cta-pro     { background: #00D4AA; color: #fff; }
+  .cta-elite   { background: #7B61FF; color: #fff; }
+
+  /* Comparison table */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 13px; }
+  .compare-table th {
+    background: #f5f7fa;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #666;
+    border-bottom: 2px solid #e8eaf0;
+  }
+  .compare-table th.th-starter { color: #888; }
+  .compare-table th.th-pro     { color: #00A882; }
+  .compare-table th.th-elite   { color: #7B61FF; }
+  .compare-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #f0f2f5;
+    color: #444;
+    vertical-align: middle;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: #fafbff; }
+  .compare-table .row-label { font-weight: 600; color: #1a1a2e; }
+  .compare-table .check-cell  { color: #00D4AA; font-size: 16px; text-align: center; }
+  .compare-table .cross-cell  { color: #ddd; font-size: 16px; text-align: center; }
+  .compare-table .purple-cell { color: #7B61FF; font-size: 16px; text-align: center; }
+
+  /* Add-ons */
+  .addon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 20px 0 36px;
+  }
+  .addon-card {
+    border: 1px solid #e8eaf0;
+    border-radius: 14px;
+    padding: 18px;
+    background: #fafbff;
+  }
+  .addon-card-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+  .addon-card-name { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+  .addon-card-desc { font-size: 12px; color: #888; margin-bottom: 8px; }
+  .addon-card-price { font-size: 14px; font-weight: 800; color: #7B61FF; }
+</style>
+
+<div class="section page-break" id="s15">
+  <div class="section-header">
+    <div class="section-num" style="background: linear-gradient(135deg,#FF9F43,#E07B00);">15</div>
+    <div>
+      <h2>Subscription Plans</h2>
+      <p class="section-desc">Commercial pricing tiers for selling PlayRise to sports clubs and facilities</p>
+    </div>
+  </div>
+
+  <p>PlayRise is sold as a SaaS subscription to clubs and sports facilities. Each club gets a dedicated workspace — their own members, ladders, tournaments, and branding. The three tiers below are designed to match clubs by size: from small recreational clubs just getting started, to large multi-sport facilities needing full automation and priority support.</p>
+
+  <div class="info-box">
+    <strong>Billing model:</strong> All plans are billed yearly — one flat annual payment. Pricing is per club, not per member — a club pays one fee regardless of how many players sign up. All plans include onboarding support.
+  </div>
+
+  <!-- ── PRICING CARDS ── -->
+  <div class="pricing-grid">
+
+    <!-- STARTER -->
+    <div class="pricing-card card-starter">
+      <span class="pricing-tier-icon">🌱</span>
+      <div class="pricing-tier-name teal">Starter</div>
+      <div class="pricing-tagline">For small clubs testing the waters with their first digital ladder.</div>
+      <div class="pricing-price"><sup>$</sup>120<sub>/yr</sub></div>
+      <div class="pricing-billing">Billed yearly · one payment</div>
+      <hr class="pricing-divider"/>
+      <ul class="pricing-features">
+        <li><span class="feat-icon check">✓</span> <span><strong>1 ladder</strong> — single active ladder at all times</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Up to <strong>8 players</strong> per ladder</span></li>
+        <li><span class="feat-icon check">✓</span> <span><strong>Seasonal</strong> — one season per calendar year</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Match result submission</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Live standings &amp; rankings</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Player profiles &amp; match history</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Email support (72h response)</span></li>
+        <li class="feat-dim"><span class="feat-icon cross">✗</span> <span>Challenge system</span></li>
+        <li class="feat-dim"><span class="feat-icon cross">✗</span> <span>Tournaments</span></li>
+        <li class="feat-dim"><span class="feat-icon cross">✗</span> <span>Analytics dashboard</span></li>
+        <li class="feat-dim"><span class="feat-icon cross">✗</span> <span>Multiple sports</span></li>
+        <li class="feat-dim"><span class="feat-icon cross">✗</span> <span>Custom club branding</span></li>
+      </ul>
+      <span class="pricing-cta cta-starter">Get Started</span>
+    </div>
+
+    <!-- PRO -->
+    <div class="pricing-card card-pro">
+      <span class="pricing-badge badge-popular">Most Popular</span>
+      <span class="pricing-tier-icon">🚀</span>
+      <div class="pricing-tier-name green">Pro</div>
+      <div class="pricing-tagline">For active clubs running multiple sports and competitive ladders year-round.</div>
+      <div class="pricing-price"><sup>$</sup>219<sub>/yr</sub></div>
+      <div class="pricing-billing">Billed yearly · one payment</div>
+      <hr class="pricing-divider"/>
+      <ul class="pricing-features">
+        <li><span class="feat-icon check">✓</span> <span>Up to <strong>5 simultaneous ladders</strong></span></li>
+        <li><span class="feat-icon check">✓</span> <span>Up to <strong>50 players</strong> per ladder</span></li>
+        <li><span class="feat-icon check">✓</span> <span><strong>Unlimited seasons</strong> — start &amp; archive anytime</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Up to <strong>3 tournaments</strong> per season</span></li>
+        <li><span class="feat-icon check">✓</span> <span><strong>Challenge system</strong> — player-to-player match requests</span></li>
+        <li><span class="feat-icon check">✓</span> <span><strong>Multi-sport</strong> — tennis, padel, squash in one club</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Auto round generation &amp; scheduling</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Points &amp; ranking history per player</span></li>
+        <li><span class="feat-icon check">✓</span> <span><strong>Club analytics</strong> — match volume, activity trends</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Custom club name &amp; sport badge</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Member management (invite/remove)</span></li>
+        <li><span class="feat-icon check">✓</span> <span>Priority email support (24h response)</span></li>
+      </ul>
+      <span class="pricing-cta cta-pro">Start Free Trial</span>
+    </div>
+
+    <!-- ELITE -->
+    <div class="pricing-card card-elite">
+      <span class="pricing-badge badge-best">Best Value</span>
+      <span class="pricing-tier-icon">👑</span>
+      <div class="pricing-tier-name purple">Elite</div>
+      <div class="pricing-tagline">Unlimited everything — built for large clubs, academies, and multi-venue facilities.</div>
+      <div class="pricing-price"><sup>$</sup>399<sub>/yr</sub></div>
+      <div class="pricing-billing">Billed yearly · one payment</div>
+      <hr class="pricing-divider"/>
+      <ul class="pricing-features">
+        <li><span class="feat-icon check-purple">✓</span> <span><strong>Unlimited ladders</strong> — no cap, ever</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span><strong>Unlimited players</strong> per ladder</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span><strong>Unlimited tournaments</strong> &amp; seasons</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span>Everything in Pro, plus:</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span><strong>White-label branding</strong> — club logo, custom colors</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span><strong>Advanced analytics</strong> — player progression, heatmaps, export to CSV</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span><strong>Multiple club owners</strong> / admin accounts</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span>Automated season scheduling &amp; reminders</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span>Push notification campaigns to all members</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span>API access for integrations (booking systems, website)</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span>Dedicated onboarding session (video call)</span></li>
+        <li><span class="feat-icon check-purple">✓</span> <span><strong>Priority support — 4h SLA</strong>, direct Slack channel</span></li>
+      </ul>
+      <span class="pricing-cta cta-elite">Contact Sales</span>
+    </div>
+  </div>
+
+  <!-- ── COMPARISON TABLE ── -->
+  <h3>Feature Comparison</h3>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width:36%;">Feature</th>
+        <th class="th-starter" style="width:21%;text-align:center;">Starter · $120/yr</th>
+        <th class="th-pro"     style="width:21%;text-align:center;">Pro · $219/yr</th>
+        <th class="th-elite"   style="width:22%;text-align:center;">Elite · $399/yr</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="row-label">Active ladders</td>
+        <td style="text-align:center;font-weight:700;color:#888;">1</td>
+        <td style="text-align:center;font-weight:700;color:#00A882;">Up to 5</td>
+        <td style="text-align:center;font-weight:700;color:#7B61FF;">Unlimited</td>
+      </tr>
+      <tr>
+        <td class="row-label">Players per ladder</td>
+        <td style="text-align:center;font-weight:700;color:#888;">8</td>
+        <td style="text-align:center;font-weight:700;color:#00A882;">50</td>
+        <td style="text-align:center;font-weight:700;color:#7B61FF;">Unlimited</td>
+      </tr>
+      <tr>
+        <td class="row-label">Seasons per year</td>
+        <td style="text-align:center;font-weight:700;color:#888;">1 (seasonal)</td>
+        <td style="text-align:center;font-weight:700;color:#00A882;">Unlimited</td>
+        <td style="text-align:center;font-weight:700;color:#7B61FF;">Unlimited</td>
+      </tr>
+      <tr>
+        <td class="row-label">Tournaments</td>
+        <td class="cross-cell">✗</td>
+        <td style="text-align:center;font-weight:700;color:#00A882;">3/season</td>
+        <td style="text-align:center;font-weight:700;color:#7B61FF;">Unlimited</td>
+      </tr>
+      <tr>
+        <td class="row-label">Challenge system</td>
+        <td class="cross-cell">✗</td>
+        <td class="check-cell">✓</td>
+        <td class="purple-cell">✓</td>
+      </tr>
+      <tr>
+        <td class="row-label">Multi-sport support</td>
+        <td class="cross-cell">✗</td>
+        <td class="check-cell">✓</td>
+        <td class="purple-cell">✓</td>
+      </tr>
+      <tr>
+        <td class="row-label">Analytics dashboard</td>
+        <td class="cross-cell">✗</td>
+        <td class="check-cell">Basic</td>
+        <td class="purple-cell">Advanced + CSV export</td>
+      </tr>
+      <tr>
+        <td class="row-label">Custom club branding</td>
+        <td class="cross-cell">✗</td>
+        <td class="check-cell">Name &amp; badge</td>
+        <td class="purple-cell">Full white-label</td>
+      </tr>
+      <tr>
+        <td class="row-label">Multiple admin accounts</td>
+        <td class="cross-cell">✗</td>
+        <td class="cross-cell">✗</td>
+        <td class="purple-cell">✓</td>
+      </tr>
+      <tr>
+        <td class="row-label">Push notification campaigns</td>
+        <td class="cross-cell">✗</td>
+        <td class="cross-cell">✗</td>
+        <td class="purple-cell">✓</td>
+      </tr>
+      <tr>
+        <td class="row-label">API access</td>
+        <td class="cross-cell">✗</td>
+        <td class="cross-cell">✗</td>
+        <td class="purple-cell">✓</td>
+      </tr>
+      <tr>
+        <td class="row-label">Auto scheduling &amp; reminders</td>
+        <td class="cross-cell">✗</td>
+        <td class="cross-cell">✗</td>
+        <td class="purple-cell">✓</td>
+      </tr>
+      <tr>
+        <td class="row-label">Support SLA</td>
+        <td style="text-align:center;color:#888;">72h email</td>
+        <td style="text-align:center;color:#00A882;">24h priority email</td>
+        <td style="text-align:center;color:#7B61FF;">4h · Direct Slack</td>
+      </tr>
+      <tr>
+        <td class="row-label">Onboarding</td>
+        <td style="text-align:center;color:#888;">Self-serve docs</td>
+        <td style="text-align:center;color:#00A882;">Guided setup</td>
+        <td style="text-align:center;color:#7B61FF;">Dedicated video call</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── ADD-ONS ── -->
+  <h3>Available Add-ons</h3>
+  <p style="margin-bottom:16px;">Any plan can be extended with the following paid add-ons, billed monthly.</p>
+  <div class="addon-grid">
+    <div class="addon-card">
+      <span class="addon-card-icon">🏆</span>
+      <div class="addon-card-name">Extra Tournament Pack</div>
+      <div class="addon-card-desc">Add 5 more tournaments per season to any Starter or Pro plan.</div>
+      <div class="addon-card-price">+$19 / mo</div>
+    </div>
+    <div class="addon-card">
+      <span class="addon-card-icon">📊</span>
+      <div class="addon-card-name">Advanced Analytics</div>
+      <div class="addon-card-desc">Player progression charts, activity heatmaps, and CSV export. (Pro only)</div>
+      <div class="addon-card-price">+$29 / mo</div>
+    </div>
+    <div class="addon-card">
+      <span class="addon-card-icon">🎨</span>
+      <div class="addon-card-name">White-label Branding</div>
+      <div class="addon-card-desc">Custom logo, colors, and club name shown to all members. (Pro only)</div>
+      <div class="addon-card-price">+$39 / mo</div>
+    </div>
+    <div class="addon-card">
+      <span class="addon-card-icon">👥</span>
+      <div class="addon-card-name">Extra Admin Seats</div>
+      <div class="addon-card-desc">Add additional club owner / admin accounts (up to 3 extra).</div>
+      <div class="addon-card-price">+$15 / mo</div>
+    </div>
+    <div class="addon-card">
+      <span class="addon-card-icon">🔔</span>
+      <div class="addon-card-name">Push Notifications</div>
+      <div class="addon-card-desc">Broadcast match reminders and announcements to all members. (Starter/Pro)</div>
+      <div class="addon-card-price">+$19 / mo</div>
+    </div>
+    <div class="addon-card">
+      <span class="addon-card-icon">🔗</span>
+      <div class="addon-card-name">API Access</div>
+      <div class="addon-card-desc">Integrate PlayRise data with your website, booking system, or CRM.</div>
+      <div class="addon-card-price">+$49 / mo</div>
+    </div>
+  </div>
+
+  <!-- ── SALES NOTES ── -->
+  <h3>Sales Notes for the Team</h3>
+  <div class="info-box" style="margin-bottom:12px;">
+    <strong>Free Trial:</strong> Offer all new clubs a <strong>14-day free trial of the Pro plan</strong> — no credit card required. This lets them experience challenges, multi-sport, and analytics before committing.
+  </div>
+  <div class="warn-box" style="margin-bottom:12px;">
+    <strong>Yearly billing only:</strong> All plans are paid annually in one upfront payment. This keeps pricing simple for clubs and ensures predictable revenue. Emphasise the low yearly cost when pitching — $120/yr works out to just $10/month for the whole club.
+  </div>
+  <div class="purple-box">
+    <strong>Upgrade triggers:</strong> Clubs on Starter will naturally hit the 8-player cap. When a club wants to add a 9th player, prompt them to upgrade to Pro. Clubs on Pro hit the 50-player or 5-ladder cap — prompt to Elite. These are natural conversion points built into the product.
+  </div>
+
+  <h3>Pricing Summary</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Plan</th>
+        <th>Annual Price</th>
+        <th>Billing</th>
+        <th>Best for</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Starter</strong></td>
+        <td><strong>$120 / year</strong></td>
+        <td>Yearly · one payment</td>
+        <td>Small clubs, 1 sport, ≤ 8 players</td>
+      </tr>
+      <tr>
+        <td><strong>Pro</strong></td>
+        <td><strong>$219 / year</strong></td>
+        <td>Yearly · one payment</td>
+        <td>Active clubs, multi-sport, 10–50 players</td>
+      </tr>
+      <tr>
+        <td><strong>Elite</strong></td>
+        <td><strong>$399 / year</strong></td>
+        <td>Yearly · one payment</td>
+        <td>Large facilities, academies, no limits</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="divider" />
+
+  <div style="background: linear-gradient(135deg, #00D4AA08, #7B61FF08); border: 1px solid #2A2A3A; border-radius: 16px; padding: 28px; text-align: center;">
+    <div style="font-size: 32px; margin-bottom: 8px;">💼</div>
+    <div style="font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 8px;">Ready to close a deal?</div>
+    <div style="font-size: 13px; color: #888; max-width: 480px; margin: 0 auto;">
+      Start every prospect on the <strong style="color:#00D4AA;">Pro 14-day trial</strong>. Most clubs convert within the first week once their players are active on the app.
     </div>
   </div>
 </div>
