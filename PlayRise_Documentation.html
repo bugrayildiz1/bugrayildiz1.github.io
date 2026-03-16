@@ -647,6 +647,11 @@
   <h2>Table of Contents</h2>
 
   <div class="toc-section">
+    <a href="#s0" class="toc-item"><span class="toc-num" style="color:#7B61FF;">00</span><span class="toc-title">Interactive Demo</span></a>
+    <div class="toc-sub">Live clickable UI mockup — explore all screens</div>
+  </div>
+
+  <div class="toc-section">
     <a href="#s1" class="toc-item"><span class="toc-num">01</span><span class="toc-title">Product Overview</span></a>
     <div class="toc-sub">Vision · Key differentiators · Supported sports</div>
   </div>
@@ -716,6 +721,592 @@
     <div class="toc-sub">Installation · Environment · Running the app · Migrations</div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 0 — INTERACTIVE DEMO
+════════════════════════════════════════════ -->
+<style>
+  .demo-outer { padding: 60px 40px; background: linear-gradient(180deg,#f0f2ff 0%,#f8f9fc 100%); min-height: 100vh; }
+  .demo-layout { display: flex; gap: 40px; align-items: flex-start; margin-top: 28px; }
+  .demo-phone-wrap { flex-shrink: 0; position: sticky; top: 32px; }
+  .demo-phone {
+    width: 320px; background: #0A0A0F;
+    border-radius: 48px; border: 8px solid #2A2A3A;
+    box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.05) inset, inset 0 0 30px rgba(0,212,170,.04);
+    overflow: hidden; position: relative; user-select: none;
+  }
+  .dp-statusbar { height: 44px; background: #0A0A0F; display: flex; align-items: center; justify-content: space-between; padding: 8px 20px 0; position: relative; flex-shrink: 0; }
+  .dp-island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 110px; height: 30px; background: #000; border-radius: 18px; z-index: 5; }
+  .dp-stime { font-size: 12px; font-weight: 700; color: #fff; font-family: 'Helvetica Neue', sans-serif; }
+  .dp-sicons { font-size: 10px; color: #fff; display: flex; gap: 4px; align-items: center; }
+  .dp-content { height: 490px; overflow-y: auto; overflow-x: hidden; background: #0A0A0F; scrollbar-width: none; -ms-overflow-style: none; }
+  .dp-content::-webkit-scrollbar { display: none; }
+  .dp-tabs { height: 66px; background: #12121A; border-top: 1px solid #2A2A3A; display: flex; align-items: center; padding: 0 4px; flex-shrink: 0; }
+  .dp-home { height: 22px; background: #0A0A0F; display: flex; align-items: center; justify-content: center; }
+  .dp-homeind { width: 120px; height: 4px; background: #333; border-radius: 2px; }
+  .demo-guide { flex: 1; min-width: 0; }
+  .dg-screen { background: #0A0A0F; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: #00D4AA; font-weight: 700; border: 1px solid #2A2A3A; font-family: monospace; }
+  .dg-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .dg-card-title { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+  .dg-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; margin: 3px; transition: opacity .15s; }
+  .dg-btn:hover { opacity: .8; }
+  .dg-btn-t { background: #00D4AA; color: #0A0A0F; }
+  .dg-btn-p { background: #7B61FF20; color: #7B61FF; border: 1px solid #7B61FF40; }
+  .dg-btn-o { background: #FF9F4320; color: #FF9F43; border: 1px solid #FF9F4340; }
+  .dg-hints ul { list-style: none; padding: 0; margin: 0; }
+  .dg-hints li { font-size: 12px; color: #555; padding: 5px 0; border-bottom: 1px solid #f0f0f0; display: flex; align-items: baseline; gap: 7px; }
+  .dg-hints li::before { content: '→'; color: #00D4AA; font-weight: 700; flex-shrink: 0; }
+  .dg-hints li:last-child { border-bottom: none; }
+  .dg-stat { background: #f8f9fc; border-radius: 8px; padding: 10px; text-align: center; }
+  .dg-stat-num { font-size: 20px; font-weight: 800; }
+  .dg-stat-label { font-size: 9px; color: #888; margin-top: 2px; font-weight: 600; }
+</style>
+
+<div id="s0" class="demo-outer page-break">
+  <div class="section-label purple">00 — INTERACTIVE DEMO</div>
+  <h2 class="section-title">Try the App</h2>
+  <p class="section-desc">A fully interactive mockup of PlayRise — tap screens, enter scores, switch tabs, send challenges. Use the navigation buttons or tap directly inside the phone.</p>
+
+  <div class="demo-layout">
+    <!-- Phone frame -->
+    <div class="demo-phone-wrap">
+      <div class="demo-phone">
+        <div class="dp-island"></div>
+        <div class="dp-statusbar">
+          <span class="dp-stime">9:41</span>
+          <div style="width:120px;"></div>
+          <div class="dp-sicons"><span style="letter-spacing:-1px;">▐▐▐</span><span>WiFi</span><span>🔋</span></div>
+        </div>
+        <div id="demoContent" class="dp-content"></div>
+        <div id="demoTabBar" class="dp-tabs"></div>
+        <div class="dp-home"><div class="dp-homeind"></div></div>
+      </div>
+    </div>
+
+    <!-- Guide panel -->
+    <div class="demo-guide">
+      <div class="dg-screen" id="demoScreenName">📱 Screen: My Ladders</div>
+
+      <div class="dg-card">
+        <div class="dg-card-title">🗺️ Navigate to any screen</div>
+        <button class="dg-btn dg-btn-t" onclick="demoNavigate('my-ladders')">🏆 My Ladders</button>
+        <button class="dg-btn dg-btn-t" onclick="demoNavigate('ladder-detail')">📊 Ladder Detail</button>
+        <button class="dg-btn dg-btn-t" onclick="demoNavigate('my-matches')">🎾 My Matches</button>
+        <button class="dg-btn dg-btn-t" onclick="demoNavigate('submit-result')">✓ Submit Result</button>
+        <button class="dg-btn dg-btn-p" onclick="demoNavigate('browse-clubs')">🏟️ Browse Clubs</button>
+        <button class="dg-btn dg-btn-p" onclick="demoNavigate('club-detail')">👥 Club Detail</button>
+        <button class="dg-btn dg-btn-p" onclick="demoNavigate('challenge-new')">⚡ New Challenge</button>
+        <button class="dg-btn dg-btn-o" onclick="demoNavigate('profile')">👤 Profile</button>
+      </div>
+
+      <div class="dg-card dg-hints" id="demoHints">
+        <div class="dg-card-title">💡 What to try on this screen</div>
+        <ul id="demoHintsList"><li>Tap any <strong>ladder card</strong> to view standings</li><li>Use the <strong>bottom tabs</strong> to switch sections</li></ul>
+      </div>
+
+      <div class="dg-card">
+        <div class="dg-card-title">📊 Demo Player Stats (James Kim)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div class="dg-stat"><div class="dg-stat-num" style="color:#00D4AA;">3</div><div class="dg-stat-label">LADDERS</div></div>
+          <div class="dg-stat"><div class="dg-stat-num" style="color:#F5C542;">#1</div><div class="dg-stat-label">BEST RANK</div></div>
+          <div class="dg-stat"><div class="dg-stat-num" style="color:#7B61FF;">11</div><div class="dg-stat-label">TOTAL WINS</div></div>
+          <div class="dg-stat"><div class="dg-stat-num" style="color:#FF9F43;">2</div><div class="dg-stat-label">PENDING</div></div>
+          <div class="dg-stat"><div class="dg-stat-num" style="color:#00D4AA;">58%</div><div class="dg-stat-label">WIN RATE</div></div>
+          <div class="dg-stat"><div class="dg-stat-num" style="color:#FF4D6A;">10</div><div class="dg-stat-label">LOSSES</div></div>
+        </div>
+      </div>
+
+      <div class="dg-card">
+        <div class="dg-card-title" style="margin-bottom:8px;">🔑 Key interactions to show</div>
+        <div style="font-size:12px;color:#555;line-height:1.8;">
+          <strong>For developers:</strong> Tap Submit Result → select winner → use +/− to build set score → tap Submit to see the confirmation flow.<br><br>
+          <strong>For sales:</strong> Show Browse Clubs → tap City Racket Club → tap ⚡ next to a member → see the Challenge flow. Then go to Ladder Detail → Standings to show the live ranking table.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var DS={screen:'my-ladders',activeTab:'ladders',ladderTab:'standings',matchesTab:'ladder',winner:null,sets:[[0,0]],stack:[],cStatus:{c1:'pending',c2:'accepted'},submitDone:false};
+var C={bg:'#0A0A0F',surf:'#12121A',card:'#1A1A26',brd:'#2A2A3A',pri:'#00D4AA',acc:'#7B61FF',warn:'#FF9F43',danger:'#FF4D6A',gold:'#F5C542',txt:'#FFFFFF',sec:'#9999BB',mut:'#556677',tennis:'#8BC34A',padel:'#FF6B35',squash:'#7B61FF'};
+var SC={tennis:C.tennis,padel:C.padel,squash:C.squash};
+var SE={tennis:'🎾',padel:'🏸',squash:'🟡'};
+var LADDERS=[{id:'l1',name:'Tennis Ladder',sport:'tennis',club:'City Racket Club',pos:3,count:8,w:5,l:3,pts:100},{id:'l2',name:'Padel Singles',sport:'padel',club:'City Racket Club',pos:1,count:6,w:4,l:1,pts:80},{id:'l3',name:'Squash Open',sport:'squash',club:'Squash Elite',pos:5,count:10,w:2,l:6,pts:40}];
+var ENTRIES=[{pos:1,name:'Alex Smith',w:8,l:2,pts:160},{pos:2,name:'Maria Jones',w:7,l:3,pts:140},{pos:3,name:'James Kim',w:5,l:3,pts:100,isMe:true},{pos:4,name:'Sara Park',w:5,l:5,pts:100},{pos:5,name:'Tom Voss',w:4,l:6,pts:80},{pos:6,name:'Lena Meyer',w:3,l:7,pts:60},{pos:7,name:'Chris Wu',w:2,l:8,pts:40},{pos:8,name:'Dana Fox',w:1,l:9,pts:20}];
+var SCHED=[{id:'s1',p1:'Alex Smith',p1id:'alex',pos1:1,p2:'Maria Jones',p2id:'maria',pos2:2},{id:'s2',p1:'James Kim',p1id:'james',pos1:3,p2:'Sara Park',p2id:'sara',pos2:4,isMe:true},{id:'s3',p1:'Tom Voss',p1id:'tom',pos1:5,p2:'Lena Meyer',p2id:'lena',pos2:6},{id:'s4',p1:'Chris Wu',p1id:'chris',pos1:7,p2:'Dana Fox',p2id:'dana',pos2:8}];
+var HIST=[{p1:'Alex Smith',p2:'Tom Voss',winner:'Alex Smith',score:'6-3, 6-4',date:'Mar 8',isMe:false},{p1:'James Kim',p2:'Lena Meyer',winner:'James Kim',score:'7-5, 6-3',date:'Mar 8',isMe:true,iWon:true},{p1:'Maria Jones',p2:'Sara Park',winner:'Sara Park',score:'4-6, 7-5, 6-4',date:'Mar 8',isMe:false},{p1:'James Kim',p2:'Sara Park',winner:'Sara Park',score:'3-6, 6-4, 4-6',date:'Mar 1',isMe:true,iWon:false},{p1:'James Kim',p2:'Tom Voss',winner:'James Kim',score:'6-2, 6-1',date:'Feb 22',isMe:true,iWon:true}];
+var CLUBS=[{id:'cl1',name:'City Racket Club',loc:'Shoreditch, London',members:30,sports:['tennis','padel','squash'],dist:'0.3 km',member:true},{id:'cl2',name:'Squash Elite',loc:'Canary Wharf',members:12,sports:['squash'],dist:'1.2 km',member:true},{id:'cl3',name:'Green Court TC',loc:'Hackney, London',members:18,sports:['tennis','padel'],dist:'2.5 km',member:false},{id:'cl4',name:'Padel Park',loc:'Southwark',members:22,sports:['padel'],dist:'3.1 km',member:false}];
+var MEMBERS=[{name:'Alex Smith',un:'alex_s',role:'admin',isMe:false},{name:'Maria Jones',un:'maria_j',role:'member',isMe:false},{name:'James Kim',un:'james_k',role:'member',isMe:true},{name:'Sara Park',un:'sara_p',role:'member',isMe:false},{name:'Tom Voss',un:'tom_v',role:'member',isMe:false},{name:'Lena Meyer',un:'lena_m',role:'member',isMe:false}];
+
+function ini(n){return n.split(' ').map(function(x){return x[0];}).join('').toUpperCase().slice(0,2);}
+function scoreStr(){var f=DS.sets.filter(function(s){return s[0]>0||s[1]>0;});if(!f.length)return '';return f.map(function(s){return s[0]+'-'+s[1];}).join(', ');}
+
+function sMyLadders(){
+  var h='<div style="padding:16px;overflow-y:auto;height:100%;">';
+  h+='<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:2px;">My Ladders</div>';
+  h+='<div style="font-size:11px;color:'+C.mut+';margin-bottom:18px;">Your active rankings</div>';
+  LADDERS.forEach(function(l){
+    var sc=SC[l.sport];
+    h+='<div onclick="demoGo(\'ladder-detail\')" style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;" onmouseover="this.style.borderColor=\''+sc+'60\'" onmouseout="this.style.borderColor=\''+C.brd+'\'">';
+    h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">';
+    h+='<span style="font-size:24px;">'+SE[l.sport]+'</span>';
+    h+='<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#fff;">'+l.name+'</div><div style="font-size:10px;color:'+C.mut+';">'+l.club+'</div></div>';
+    h+='<div style="background:'+sc+'20;border:1px solid '+sc+'50;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:800;color:'+sc+';">#'+l.pos+'</div>';
+    h+='</div><div style="display:flex;gap:6px;">';
+    [[l.w,'W',C.pri],[l.l,'L',C.sec],[l.pts,'Pts',C.acc],[l.count,'Players','#fff']].forEach(function(s){
+      h+='<div style="flex:1;background:'+C.surf+';border-radius:8px;padding:8px;text-align:center;"><div style="font-size:14px;font-weight:800;color:'+s[2]+';">'+s[0]+'</div><div style="font-size:9px;color:'+C.mut+';">'+s[1]+'</div></div>';
+    });
+    h+='</div></div>';
+  });
+  h+='</div>';return h;
+}
+
+function sLadderDetail(){
+  var h='<div style="height:100%;display:flex;flex-direction:column;">';
+  h+='<div style="padding:12px 14px 6px;display:flex;align-items:center;gap:8px;flex-shrink:0;">';
+  h+='<div onclick="demoBack()" style="width:32px;height:32px;border-radius:16px;background:'+C.card+';border:1px solid '+C.brd+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:'+C.sec+';">‹</div>';
+  h+='<span style="font-size:20px;">🎾</span>';
+  h+='<div><div style="font-size:13px;font-weight:700;color:#fff;">Tennis Ladder</div><div style="font-size:10px;color:'+C.mut+';">City Racket Club</div></div>';
+  h+='</div>';
+  h+='<div style="margin:0 12px 8px;background:'+C.card+';border-radius:12px;padding:11px;border:1px solid '+C.pri+'30;display:flex;align-items:center;gap:10px;flex-shrink:0;">';
+  h+='<div><div style="font-size:9px;color:'+C.mut+';font-weight:700;letter-spacing:1px;">YOUR RANK</div><div style="font-size:26px;font-weight:900;color:'+C.pri+';line-height:1;">#3</div></div>';
+  h+='<div style="display:flex;gap:6px;flex:1;">';
+  [['5','W',C.pri],['3','L',C.sec],['100','Pts',C.acc],['62%','WR',C.warn]].forEach(function(s){
+    h+='<div style="flex:1;text-align:center;"><div style="font-size:13px;font-weight:800;color:'+s[2]+';">'+s[0]+'</div><div style="font-size:9px;color:'+C.mut+';">'+s[1]+'</div></div>';
+  });
+  h+='</div></div>';
+  h+='<div style="margin:0 12px 8px;background:'+C.surf+';border-radius:10px;padding:3px;display:flex;border:1px solid '+C.brd+';flex-shrink:0;">';
+  ['standings','matches'].forEach(function(t){
+    var a=DS.ladderTab===t;
+    h+='<div onclick="demoLadderTab(\''+t+'\')" style="flex:1;text-align:center;padding:7px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;';
+    h+=a?'background:'+C.card+';color:'+C.pri+';':'color:'+C.mut+';';
+    h+='">'+(t==='standings'?'🏆 Standings':'⚡ Matches')+'</div>';
+  });
+  h+='</div>';
+  h+='<div style="flex:1;overflow-y:auto;">';
+  if(DS.ladderTab==='standings'){
+    h+='<div style="display:flex;padding:5px 14px;border-bottom:1px solid '+C.brd+';">';
+    h+='<div style="width:38px;font-size:9px;color:'+C.mut+';font-weight:700;">#</div>';
+    h+='<div style="flex:1;font-size:9px;color:'+C.mut+';font-weight:700;">PLAYER</div>';
+    ['W','L','PTS'].forEach(function(hd){h+='<div style="width:30px;text-align:center;font-size:9px;color:'+C.mut+';font-weight:700;">'+hd+'</div>';});
+    h+='</div>';
+    ENTRIES.forEach(function(e){
+      var pc=e.pos===1?C.gold:e.pos===2?'#C0C0C0':e.pos===3?'#CD7F32':C.surf;
+      var ptc=e.pos<=2?'#000':e.pos===3?'#fff':C.sec;
+      h+='<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid '+C.brd+'20;'+(e.isMe?'background:'+C.pri+'0D;':'')+'">';
+      h+='<div style="width:38px;"><div style="width:26px;height:26px;border-radius:13px;background:'+pc+';display:flex;align-items:center;justify-content:center;">';
+      h+=e.pos<=3?'<span style="font-size:10px;">🏆</span>':'<span style="font-size:10px;font-weight:700;color:'+ptc+';">'+e.pos+'</span>';
+      h+='</div></div>';
+      h+='<div style="flex:1;display:flex;align-items:center;gap:6px;">';
+      h+='<div style="width:28px;height:28px;border-radius:14px;background:'+C.surf+';border:1px solid '+(e.isMe?C.pri:C.brd)+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+C.sec+';">'+ini(e.name)+'</div>';
+      h+='<div style="font-size:11px;font-weight:600;color:'+(e.isMe?C.pri:'#fff')+';">'+e.name+(e.isMe?' (You)':'')+'</div>';
+      h+='</div>';
+      h+='<div style="width:30px;text-align:center;font-size:10px;color:'+C.sec+';">'+e.w+'</div>';
+      h+='<div style="width:30px;text-align:center;font-size:10px;color:'+C.sec+';">'+e.l+'</div>';
+      h+='<div style="width:30px;text-align:center;font-size:10px;color:'+C.pri+';font-weight:700;">'+e.pts+'</div>';
+      h+='</div>';
+    });
+  } else {
+    h+='<div style="padding:10px 12px;">';
+    h+='<div style="font-size:10px;font-weight:700;color:'+C.mut+';letter-spacing:1px;margin-bottom:10px;">THIS ROUND</div>';
+    SCHED.forEach(function(s){
+      h+='<div style="background:'+C.card+';border-radius:12px;padding:11px;margin-bottom:8px;border:1px solid '+(s.isMe?C.acc+'60':C.brd)+';">';
+      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:9px;">';
+      h+='<div style="width:8px;height:8px;border-radius:4px;background:'+C.acc+';"></div>';
+      h+='<div style="font-size:10px;color:'+C.sec+';flex:1;">Scheduled</div>';
+      if(s.isMe)h+='<div style="background:'+C.warn+'20;border:1px solid '+C.warn+'50;border-radius:5px;padding:2px 6px;font-size:9px;font-weight:700;color:'+C.warn+';">You</div>';
+      h+='</div>';
+      h+='<div style="display:flex;align-items:center;gap:6px;">';
+      [[s.p1,s.pos1],[s.p2,s.pos2]].forEach(function(pl,i){
+        h+='<div style="flex:1;text-align:center;">';
+        h+='<div style="width:36px;height:36px;border-radius:18px;background:'+C.surf+';border:1px solid '+C.brd+';margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:'+C.sec+';">'+ini(pl[0])+'</div>';
+        h+='<div style="font-size:10px;color:#fff;font-weight:600;">'+pl[0].split(' ')[0]+'</div>';
+        h+='<div style="font-size:9px;color:'+C.mut+';">#'+pl[1]+'</div>';
+        h+='</div>';
+        if(i===0)h+='<div style="font-size:11px;font-weight:800;color:'+C.mut+';">VS</div>';
+      });
+      h+='</div></div>';
+    });
+    h+='</div>';
+  }
+  h+='</div></div>';return h;
+}
+
+function sMyMatches(){
+  var h='<div style="height:100%;display:flex;flex-direction:column;">';
+  h+='<div style="padding:12px 14px 6px;flex-shrink:0;"><div style="font-size:18px;font-weight:800;color:#fff;">My Matches</div><div style="font-size:11px;color:'+C.mut+';">Upcoming · Private · History</div></div>';
+  h+='<div style="margin:0 12px 8px;background:'+C.surf+';border-radius:10px;padding:3px;display:flex;border:1px solid '+C.brd+';flex-shrink:0;">';
+  [['ladder','Ladder',2],['private','Private',1],['history','History',null]].forEach(function(t){
+    var a=DS.matchesTab===t[0];
+    h+='<div onclick="demoMatchesTab(\''+t[0]+'\')" style="flex:1;text-align:center;padding:7px 3px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;position:relative;';
+    h+=a?'background:'+C.card+';color:'+C.pri+';':'color:'+C.mut+';';
+    h+='">';h+=t[1];
+    if(t[2]&&!a)h+='<span style="position:absolute;top:1px;right:3px;background:'+C.warn+';border-radius:7px;min-width:14px;height:14px;font-size:8px;font-weight:900;color:#000;display:inline-flex;align-items:center;justify-content:center;">'+t[2]+'</span>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div style="flex:1;overflow-y:auto;padding:0 12px 12px;">';
+  if(DS.matchesTab==='ladder'){
+    SCHED.filter(function(s){return s.isMe;}).forEach(function(s){
+      h+='<div style="background:'+C.card+';border-radius:12px;padding:12px;margin-bottom:10px;border:1px solid '+C.acc+'50;">';
+      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">';
+      h+='<div style="width:8px;height:8px;border-radius:4px;background:'+C.acc+';"></div>';
+      h+='<div style="font-size:10px;color:'+C.sec+';flex:1;">Tennis Ladder · Scheduled</div>';
+      h+='<div style="background:'+C.warn+'20;border:1px solid '+C.warn+'50;border-radius:5px;padding:2px 6px;font-size:9px;font-weight:700;color:'+C.warn+';">Your Match</div>';
+      h+='</div>';
+      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">';
+      [['james','James Kim',3],['sara','Sara Park',4]].forEach(function(pl,i){
+        h+='<div style="flex:1;text-align:center;">';
+        h+='<div style="width:42px;height:42px;border-radius:21px;background:'+C.surf+';border:2px solid '+(i===0?C.pri:C.brd)+';margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:'+C.sec+';">'+ini(pl[1])+'</div>';
+        h+='<div style="font-size:11px;color:'+(i===0?C.pri:'#fff')+';font-weight:600;">'+pl[1].split(' ')[0]+(i===0?' (You)':'')+'</div>';
+        h+='<div style="font-size:9px;color:'+C.mut+';">#'+pl[2]+' on ladder</div>';
+        h+='</div>';
+        if(i===0)h+='<div style="font-size:12px;font-weight:800;color:'+C.mut+';">VS</div>';
+      });
+      h+='</div>';
+      h+='<div onclick="demoGo(\'submit-result\')" style="background:'+C.pri+';border-radius:9px;padding:9px;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">';
+      h+='<span style="font-size:13px;color:#0A0A0F;">✓</span><span style="font-size:12px;font-weight:700;color:#0A0A0F;">Submit Result</span>';
+      h+='</div></div>';
+    });
+    h+='<div style="font-size:10px;font-weight:700;color:'+C.mut+';letter-spacing:1px;margin:8px 0;">OTHER MATCHES THIS ROUND</div>';
+    SCHED.filter(function(s){return !s.isMe;}).forEach(function(s){
+      h+='<div style="background:'+C.card+';border-radius:10px;padding:10px;margin-bottom:6px;border:1px solid '+C.brd+';">';
+      h+='<div style="display:flex;align-items:center;gap:8px;">';
+      h+='<div style="flex:1;text-align:center;"><div style="font-size:10px;font-weight:600;color:#fff;">'+s.p1+'</div><div style="font-size:9px;color:'+C.mut+';">#'+s.pos1+'</div></div>';
+      h+='<div style="font-size:11px;color:'+C.mut+';font-weight:800;">VS</div>';
+      h+='<div style="flex:1;text-align:center;"><div style="font-size:10px;font-weight:600;color:#fff;">'+s.p2+'</div><div style="font-size:9px;color:'+C.mut+';">#'+s.pos2+'</div></div>';
+      h+='</div></div>';
+    });
+  } else if(DS.matchesTab==='private'){
+    [{id:'c1',from:'Alex Smith',to:'James Kim',dir:'received',ladder:'Tennis Ladder',msg:"Let's play Sunday?"},{id:'c2',from:'James Kim',to:'Sara Park',dir:'sent',ladder:'Padel Singles',msg:''}].forEach(function(c){
+      var st=DS.cStatus[c.id];
+      var stc=st==='pending'?C.warn:st==='accepted'?C.pri:C.danger;
+      var stl=st==='pending'?'● Pending':st==='accepted'?'✓ Accepted':'✕ Declined';
+      h+='<div style="background:'+C.card+';border-radius:12px;padding:12px;margin-bottom:10px;border:1px solid '+C.brd+';">';
+      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">';
+      h+='<div style="font-size:10px;font-weight:700;color:'+stc+';">'+stl+'</div>';
+      h+='<div style="flex:1;"></div><div style="font-size:9px;color:'+C.mut+';">'+c.ladder+'</div>';
+      h+='</div>';
+      h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">';
+      h+='<div style="width:30px;height:30px;border-radius:15px;background:'+C.surf+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:'+C.sec+';">'+ini(c.from)+'</div>';
+      h+='<div style="flex:1;"><div style="font-size:11px;font-weight:600;color:#fff;">'+c.from+'</div><div style="font-size:9px;color:'+C.mut+';">→ '+c.to+'</div></div>';
+      if(c.dir==='received')h+='<div style="background:'+C.pri+'20;border-radius:5px;padding:2px 6px;font-size:9px;color:'+C.pri+';font-weight:700;">You</div>';
+      h+='</div>';
+      if(c.msg)h+='<div style="font-size:10px;color:'+C.sec+';font-style:italic;margin-bottom:8px;">"'+c.msg+'"</div>';
+      if(st==='pending'&&c.dir==='received'){
+        h+='<div style="display:flex;gap:8px;">';
+        h+='<div onclick="demoAccept(\''+c.id+'\')" style="flex:1;background:'+C.pri+';border-radius:8px;padding:8px;text-align:center;cursor:pointer;font-size:11px;font-weight:700;color:#0A0A0F;">Accept</div>';
+        h+='<div onclick="demoDecline(\''+c.id+'\')" style="flex:1;background:transparent;border:1px solid '+C.danger+';border-radius:8px;padding:8px;text-align:center;cursor:pointer;font-size:11px;font-weight:700;color:'+C.danger+';">Decline</div>';
+        h+='</div>';
+      } else if(st==='accepted'){
+        h+='<div onclick="demoGo(\'submit-result\')" style="background:'+C.pri+';border-radius:8px;padding:9px;text-align:center;cursor:pointer;font-size:11px;font-weight:700;color:#0A0A0F;">Submit Result</div>';
+      } else if(st==='declined'){
+        h+='<div style="background:'+C.danger+'10;border:1px solid '+C.danger+'30;border-radius:8px;padding:8px;text-align:center;font-size:10px;color:'+C.danger+';">Challenge declined</div>';
+      }
+      h+='</div>';
+    });
+  } else {
+    HIST.forEach(function(m){
+      h+='<div style="background:'+C.card+';border-radius:12px;padding:11px;margin-bottom:8px;border:1px solid '+(m.isMe?C.pri+'30':C.brd)+';">';
+      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">';
+      h+='<div style="width:8px;height:8px;border-radius:4px;background:'+C.pri+';"></div>';
+      h+='<div style="font-size:10px;color:'+C.sec+';flex:1;">'+m.date+' · Tennis Ladder</div>';
+      if(m.isMe){var won=m.iWon;h+='<div style="background:'+(won?C.pri+'20':C.danger+'20')+';border:1px solid '+(won?C.pri+'40':C.danger+'40')+';border-radius:5px;padding:2px 6px;font-size:9px;font-weight:700;color:'+(won?C.pri:C.danger)+'">'+(won?'Win':'Loss')+'</div>';}
+      h+='</div>';
+      h+='<div style="display:flex;align-items:center;">';
+      h+='<div style="flex:1;"><div style="font-size:11px;font-weight:600;color:'+(m.winner===m.p1?C.pri:'#fff')+';">'+m.p1+(m.winner===m.p1?' 🏆':'')+'</div></div>';
+      h+='<div style="font-size:11px;font-weight:800;color:'+C.pri+';margin:0 8px;">'+m.score+'</div>';
+      h+='<div style="flex:1;text-align:right;"><div style="font-size:11px;font-weight:600;color:'+(m.winner===m.p2?C.pri:'#fff')+'">'+(m.winner===m.p2?'🏆 ':'')+m.p2+'</div></div>';
+      h+='</div></div>';
+    });
+  }
+  h+='</div></div>';return h;
+}
+
+function sSubmitResult(){
+  if(DS.submitDone){
+    var h='<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;background:'+C.bg+';">';
+    h+='<div style="font-size:56px;margin-bottom:16px;animation:none;">🏆</div>';
+    h+='<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px;">Result Submitted!</div>';
+    h+='<div style="font-size:13px;color:'+C.sec+';margin-bottom:24px;">Standings have been updated</div>';
+    h+='<div style="background:'+C.pri+'20;border:1px solid '+C.pri+'40;border-radius:12px;padding:14px 24px;margin-bottom:8px;">';
+    h+='<div style="font-size:12px;color:'+C.pri+';font-weight:700;">+20 Points Earned</div>';
+    var ss=scoreStr();if(ss)h+='<div style="font-size:14px;font-weight:800;color:#fff;margin-top:6px;">'+ss+'</div>';
+    h+='</div>';
+    h+='<div style="font-size:11px;color:'+C.sec+';margin-bottom:24px;">Next round will be generated automatically</div>';
+    h+='<div onclick="demoSubmitBack()" style="background:'+C.pri+';border-radius:10px;padding:12px 32px;cursor:pointer;font-size:13px;font-weight:700;color:#0A0A0F;">Back to My Matches</div>';
+    h+='</div>';return h;
+  }
+  var p1='James Kim',p2='Sara Park';
+  var ss=scoreStr();
+  var h='<div style="height:100%;overflow-y:auto;">';
+  h+='<div style="padding:12px 14px 8px;display:flex;align-items:center;gap:8px;">';
+  h+='<div onclick="demoBack()" style="width:32px;height:32px;border-radius:16px;background:'+C.card+';border:1px solid '+C.brd+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:'+C.sec+';">✕</div>';
+  h+='<div style="font-size:15px;font-weight:800;color:#fff;">Submit Result</div>';
+  h+='</div>';
+  h+='<div style="padding:0 12px;">';
+  h+='<div style="font-size:12px;color:'+C.sec+';margin-bottom:12px;">Who won the match?</div>';
+  h+='<div style="display:flex;gap:10px;margin-bottom:16px;">';
+  [['james',p1],['sara',p2]].forEach(function(pl){
+    var sel=DS.winner===pl[0];
+    h+='<div onclick="demoSelectWinner(\''+pl[0]+'\')" style="flex:1;background:'+(sel?C.pri+'10':C.card)+';border:2px solid '+(sel?C.pri:C.brd)+';border-radius:14px;padding:13px 8px;text-align:center;cursor:pointer;transition:all .15s;">';
+    h+='<div style="width:46px;height:46px;border-radius:23px;background:'+C.surf+';border:2px solid '+(sel?C.pri:C.brd)+';margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:'+C.sec+';">'+ini(pl[1])+'</div>';
+    h+='<div style="font-size:12px;font-weight:600;color:'+(sel?C.pri:'#fff')+';">'+pl[1]+'</div>';
+    if(sel)h+='<div style="background:'+C.gold+'20;border-radius:8px;padding:3px 8px;margin-top:6px;display:inline-flex;align-items:center;gap:4px;"><span>🏆</span><span style="font-size:10px;font-weight:700;color:'+C.gold+';">Winner</span></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:14px;padding:13px;margin-bottom:14px;">';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">';
+  h+='<div style="font-size:12px;font-weight:700;color:'+C.sec+';">Score <span style="font-size:10px;font-weight:400;">(optional)</span></div>';
+  if(ss)h+='<div style="font-size:11px;font-weight:700;color:'+C.pri+';">'+ss+'</div>';
+  h+='</div>';
+  h+='<div style="display:flex;gap:8px;margin-bottom:6px;">';
+  h+='<div style="width:44px;"></div>';
+  h+='<div style="flex:1;font-size:9px;font-weight:700;color:'+C.mut+';text-align:center;">'+p1.split(' ')[0].toUpperCase()+'</div>';
+  h+='<div style="width:20px;"></div>';
+  h+='<div style="flex:1;font-size:9px;font-weight:700;color:'+C.mut+';text-align:center;">'+p2.split(' ')[0].toUpperCase()+'</div>';
+  h+='<div style="width:24px;"></div></div>';
+  DS.sets.forEach(function(set,idx){
+    h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">';
+    h+='<div style="width:44px;font-size:10px;font-weight:700;color:'+C.mut+';">Set '+(idx+1)+'</div>';
+    [0,1].forEach(function(p){
+      if(p===1)h+='<div style="width:20px;text-align:center;font-size:14px;font-weight:700;color:'+C.mut+';">–</div>';
+      h+='<div style="flex:1;display:flex;align-items:center;background:'+C.surf+';border-radius:9px;border:1px solid '+C.brd+';">';
+      h+='<div onclick="demoAdjust('+idx+','+p+',-1)" style="width:30px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:'+C.sec+';line-height:1;">−</div>';
+      h+='<div style="flex:1;text-align:center;font-size:15px;font-weight:800;color:#fff;">'+set[p]+'</div>';
+      h+='<div onclick="demoAdjust('+idx+','+p+',1)" style="width:30px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:'+C.sec+';line-height:1;">+</div>';
+      h+='</div>';
+    });
+    h+='<div style="width:24px;display:flex;align-items:center;justify-content:center;">';
+    if(DS.sets.length>1)h+='<div onclick="demoRemoveSet('+idx+')" style="cursor:pointer;font-size:13px;color:'+C.danger+';">✕</div>';
+    h+='</div></div>';
+  });
+  if(DS.sets.length<5)h+='<div onclick="demoAddSet()" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border:1px dashed '+C.acc+'50;border-radius:9px;cursor:pointer;margin-top:2px;"><span style="color:'+C.acc+';">+</span><span style="font-size:11px;color:'+C.acc+';font-weight:600;">Add Set</span></div>';
+  h+='</div>';
+  h+='<div style="background:'+C.pri+'10;border:1px solid '+C.pri+'30;border-radius:10px;padding:10px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start;">';
+  h+='<span>ℹ️</span><div style="font-size:10px;color:'+C.sec+';line-height:1.5;">Winner gains +20 points. If the lower-ranked player wins, they swap positions.</div>';
+  h+='</div>';
+  h+='<div onclick="demoSubmit()" style="background:'+(DS.winner?C.pri:'#2A2A3A')+';border-radius:12px;padding:13px;text-align:center;cursor:'+(DS.winner?'pointer':'default')+';display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;transition:background .2s;">';
+  h+='<span style="font-size:15px;color:'+(DS.winner?'#0A0A0F':'#555')+';">✓</span>';
+  h+='<span style="font-size:14px;font-weight:700;color:'+(DS.winner?'#0A0A0F':'#555')+';">Submit Result</span>';
+  h+='</div></div></div>';return h;
+}
+
+function sBrowseClubs(){
+  var h='<div style="padding:16px;overflow-y:auto;height:100%;">';
+  h+='<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:2px;">Browse Clubs</div>';
+  h+='<div style="font-size:11px;color:'+C.mut+';margin-bottom:16px;">📍 Sorted by distance from you</div>';
+  CLUBS.forEach(function(club){
+    h+='<div onclick="demoGo(\'club-detail\')" style="background:'+C.card+';border:1px solid '+(club.member?C.pri+'40':C.brd)+';border-radius:14px;padding:13px;margin-bottom:10px;cursor:pointer;" onmouseover="this.style.borderColor=\''+(club.member?C.pri:C.pri+'50')+'\'" onmouseout="this.style.borderColor=\''+(club.member?C.pri+'40':C.brd)+'\'">';
+    h+='<div style="display:flex;align-items:flex-start;gap:10px;">';
+    h+='<div style="width:42px;height:42px;border-radius:12px;background:'+C.surf+';border:1px solid '+C.brd+';flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:'+C.sec+';">'+club.name.split(' ').map(function(w){return w[0];}).join('').slice(0,3)+'</div>';
+    h+='<div style="flex:1;">';
+    h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">';
+    h+='<div style="font-size:13px;font-weight:700;color:#fff;">'+club.name+'</div>';
+    if(club.member)h+='<div style="background:'+C.pri+'20;border-radius:5px;padding:1px 6px;font-size:9px;font-weight:700;color:'+C.pri+';">Member</div>';
+    h+='</div>';
+    h+='<div style="font-size:10px;color:'+C.mut+';margin-bottom:5px;">📍 '+club.loc+'</div>';
+    h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">';
+    h+='<div style="font-size:10px;color:'+C.sec+';">👥 '+club.members+' members</div>';
+    h+='<div style="font-size:10px;color:'+C.sec+';">📏 '+club.dist+'</div>';
+    h+='</div>';
+    h+='<div style="display:flex;gap:4px;">';
+    club.sports.forEach(function(s){h+='<span style="font-size:14px;">'+SE[s]+'</span>';});
+    h+='</div></div>';
+    if(!club.member)h+='<div style="background:'+C.pri+';border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;color:#0A0A0F;white-space:nowrap;align-self:center;flex-shrink:0;">Join</div>';
+    h+='</div></div>';
+  });
+  h+='</div>';return h;
+}
+
+function sClubDetail(){
+  var h='<div style="height:100%;overflow-y:auto;">';
+  h+='<div style="padding:12px 14px 0;display:flex;align-items:center;gap:8px;">';
+  h+='<div onclick="demoBack()" style="width:32px;height:32px;border-radius:16px;background:'+C.card+';border:1px solid '+C.brd+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:'+C.sec+';">‹</div>';
+  h+='<div style="font-size:14px;font-weight:700;color:#fff;">City Racket Club</div>';
+  h+='</div>';
+  h+='<div style="padding:12px;">';
+  h+='<div style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:16px;padding:14px;margin-bottom:12px;">';
+  h+='<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">';
+  h+='<div style="width:50px;height:50px;border-radius:14px;background:'+C.surf+';border:1px solid '+C.brd+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:'+C.sec+';">CRC</div>';
+  h+='<div><div style="font-size:14px;font-weight:800;color:#fff;">City Racket Club</div><div style="font-size:10px;color:'+C.mut+';">📍 Shoreditch, London</div></div>';
+  h+='</div>';
+  h+='<div style="display:flex;gap:6px;">';
+  [['30','Members',C.pri],['3','Ladders',C.acc],['Member','Status',C.pri]].forEach(function(s){
+    h+='<div style="flex:1;background:'+C.surf+';border-radius:8px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:800;color:'+s[2]+';">'+s[0]+'</div><div style="font-size:9px;color:'+C.mut+';">'+s[1]+'</div></div>';
+  });
+  h+='</div></div>';
+  h+='<div style="font-size:10px;font-weight:700;color:'+C.mut+';letter-spacing:1px;margin-bottom:8px;">LADDERS</div>';
+  LADDERS.slice(0,2).forEach(function(l){
+    h+='<div onclick="demoGo(\'ladder-detail\')" style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:12px;padding:10px;margin-bottom:7px;display:flex;align-items:center;gap:8px;cursor:pointer;">';
+    h+='<span style="font-size:18px;">'+SE[l.sport]+'</span>';
+    h+='<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#fff;">'+l.name+'</div><div style="font-size:10px;color:'+C.mut+';">'+l.count+' players · Active</div></div>';
+    h+='<div style="font-size:18px;color:'+C.sec+';">›</div>';
+    h+='</div>';
+  });
+  h+='<div style="font-size:10px;font-weight:700;color:'+C.mut+';letter-spacing:1px;margin:12px 0 8px;">MEMBERS</div>';
+  MEMBERS.forEach(function(m){
+    h+='<div style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:11px;padding:9px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">';
+    h+='<div style="width:32px;height:32px;border-radius:16px;background:'+C.surf+';border:1px solid '+(m.isMe?C.pri:C.brd)+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:'+C.sec+';">'+ini(m.name)+'</div>';
+    h+='<div style="flex:1;"><div style="font-size:11px;font-weight:600;color:'+(m.isMe?C.pri:'#fff')+';">'+m.name+(m.isMe?' (You)':'')+'</div><div style="font-size:9px;color:'+C.mut+';">'+m.role+'</div></div>';
+    if(!m.isMe)h+='<div onclick="demoGo(\'challenge-new\')" style="width:28px;height:28px;border-radius:8px;background:'+C.pri+'15;border:1px solid '+C.pri+'40;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;" title="Challenge this player">⚡</div>';
+    h+='</div>';
+  });
+  h+='</div></div>';return h;
+}
+
+function sChallengeNew(){
+  var h='<div style="height:100%;overflow-y:auto;padding:14px;">';
+  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">';
+  h+='<div onclick="demoBack()" style="width:32px;height:32px;border-radius:16px;background:'+C.card+';border:1px solid '+C.brd+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:'+C.sec+';">‹</div>';
+  h+='<div style="font-size:15px;font-weight:800;color:#fff;">New Challenge</div>';
+  h+='</div>';
+  h+='<div style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:14px;padding:14px;margin-bottom:14px;">';
+  h+='<div style="display:flex;align-items:center;gap:10px;">';
+  [['JK','James Kim','You',true],['AS','Alex Smith',null,false]].forEach(function(p,i){
+    h+='<div style="flex:1;text-align:center;">';
+    h+='<div style="width:42px;height:42px;border-radius:21px;background:'+C.surf+';border:2px solid '+(p[3]?C.pri:C.brd)+';margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:'+C.sec+';">'+p[0]+'</div>';
+    h+='<div style="font-size:11px;font-weight:700;color:'+(p[3]?C.pri:'#fff')+';">'+p[1]+'</div>';
+    if(p[2])h+='<div style="font-size:9px;color:'+C.mut+';">'+p[2]+'</div>';
+    h+='</div>';
+    if(i===0)h+='<div style="font-size:16px;color:'+C.pri+';">⚡</div>';
+  });
+  h+='</div></div>';
+  h+='<div style="font-size:11px;font-weight:700;color:'+C.sec+';margin-bottom:8px;">Select Ladder</div>';
+  LADDERS.forEach(function(l,i){
+    h+='<div style="background:'+C.card+';border:2px solid '+(i===0?C.pri:C.brd)+';border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="void(0)">';
+    h+='<span style="font-size:16px;">'+SE[l.sport]+'</span>';
+    h+='<div style="flex:1;font-size:12px;font-weight:600;color:#fff;">'+l.name+'</div>';
+    if(i===0)h+='<div style="width:18px;height:18px;border-radius:9px;background:'+C.pri+';display:flex;align-items:center;justify-content:center;font-size:11px;color:#000;">✓</div>';
+    h+='</div>';
+  });
+  h+='<div style="font-size:11px;font-weight:700;color:'+C.sec+';margin:12px 0 6px;">Message (optional)</div>';
+  h+='<div style="background:'+C.surf+';border:1px solid '+C.brd+';border-radius:10px;padding:10px;font-size:11px;color:'+C.sec+';margin-bottom:12px;">Let\'s play this Sunday morning? 🎾</div>';
+  h+='<div style="font-size:11px;font-weight:700;color:'+C.sec+';margin-bottom:6px;">Proposed Date</div>';
+  h+='<div style="background:'+C.surf+';border:1px solid '+C.brd+';border-radius:10px;padding:10px;font-size:11px;color:'+C.sec+';margin-bottom:12px;">2026-03-20</div>';
+  h+='<div style="background:'+C.acc+'10;border:1px solid '+C.acc+'30;border-radius:10px;padding:10px;display:flex;gap:8px;margin-bottom:14px;align-items:flex-start;">';
+  h+='<span>ℹ️</span><div style="font-size:10px;color:'+C.sec+';line-height:1.5;">Challenge expires in 7 days. Results will update both players\' standings.</div>';
+  h+='</div>';
+  h+='<div onclick="demoChallengeBack()" style="background:'+C.pri+';border-radius:12px;padding:12px;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">';
+  h+='<span style="font-size:14px;color:#0A0A0F;">⚡</span><span style="font-size:13px;font-weight:700;color:#0A0A0F;">Send Challenge</span>';
+  h+='</div></div>';return h;
+}
+
+function sProfile(){
+  var h='<div style="padding:16px;overflow-y:auto;height:100%;">';
+  h+='<div style="text-align:center;margin-bottom:20px;">';
+  h+='<div style="width:70px;height:70px;border-radius:35px;background:'+C.surf+';border:3px solid '+C.pri+';margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:'+C.pri+';">JK</div>';
+  h+='<div style="font-size:16px;font-weight:800;color:#fff;">James Kim</div>';
+  h+='<div style="font-size:11px;color:'+C.mut+';">@james_k</div>';
+  h+='</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">';
+  [['11','Total Wins',C.pri],['10','Losses',C.sec],['58%','Win Rate',C.acc],['#1','Best Rank',C.gold]].forEach(function(s){
+    h+='<div style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:12px;padding:11px;text-align:center;">';
+    h+='<div style="font-size:20px;font-weight:800;color:'+s[2]+';">'+s[0]+'</div>';
+    h+='<div style="font-size:9px;color:'+C.mut+';margin-top:2px;">'+s[1]+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div style="font-size:10px;font-weight:700;color:'+C.mut+';letter-spacing:1px;margin-bottom:10px;">MY LADDERS</div>';
+  LADDERS.forEach(function(l){
+    var sc=SC[l.sport];
+    h+='<div onclick="demoGo(\'ladder-detail\')" style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:12px;padding:10px;margin-bottom:7px;display:flex;align-items:center;gap:8px;cursor:pointer;">';
+    h+='<span style="font-size:18px;">'+SE[l.sport]+'</span>';
+    h+='<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#fff;">'+l.name+'</div><div style="font-size:10px;color:'+C.mut+';">'+l.w+'W · '+l.l+'L · '+l.pts+'pts</div></div>';
+    h+='<div style="background:'+sc+'20;border:1px solid '+sc+'50;border-radius:8px;padding:4px 9px;font-size:12px;font-weight:800;color:'+sc+';">#'+l.pos+'</div>';
+    h+='</div>';
+  });
+  h+='<div style="font-size:10px;font-weight:700;color:'+C.mut+';letter-spacing:1px;margin:12px 0 8px;">RECENT MATCHES</div>';
+  HIST.filter(function(m){return m.isMe;}).slice(0,3).forEach(function(m){
+    var opp=m.p1==='James Kim'?m.p2:m.p1;
+    h+='<div style="background:'+C.card+';border:1px solid '+C.brd+';border-radius:10px;padding:9px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">';
+    h+='<div style="width:28px;height:28px;border-radius:8px;background:'+(m.iWon?C.pri+'20':C.danger+'20')+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:'+(m.iWon?C.pri:C.danger)+';">'+(m.iWon?'W':'L')+'</div>';
+    h+='<div style="flex:1;"><div style="font-size:11px;font-weight:600;color:#fff;">vs '+opp+'</div><div style="font-size:9px;color:'+C.mut+';">'+m.date+'</div></div>';
+    h+='<div style="font-size:10px;color:'+C.sec+';">'+m.score+'</div>';
+    h+='</div>';
+  });
+  h+='<div style="margin-top:20px;border:1px solid '+C.danger+'40;border-radius:10px;padding:10px;text-align:center;cursor:pointer;">';
+  h+='<div style="font-size:12px;font-weight:700;color:'+C.danger+';">Sign Out</div>';
+  h+='</div>';
+  h+='</div>';return h;
+}
+
+function renderTabBar(){
+  var tabs=[{id:'my-ladders',icon:'🏆',label:'My Ladders',key:'ladders'},{id:'my-matches',icon:'🎾',label:'My Matches',key:'matches',badge:2},{id:'browse-clubs',icon:'🏟️',label:'Clubs',key:'clubs'},{id:'profile',icon:'👤',label:'Profile',key:'profile'}];
+  var stackScreens=['ladder-detail','submit-result','club-detail','challenge-new'];
+  var isStack=stackScreens.indexOf(DS.screen)>-1;
+  var h='';
+  tabs.forEach(function(t){
+    var active=(DS.screen===t.id)||(isStack&&DS.activeTab===t.key);
+    h+='<div onclick="demoTab(\''+t.id+'\')" style="position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;cursor:pointer;border-radius:10px;">';
+    h+='<div style="font-size:20px;'+(active?'':'filter:grayscale(1) opacity(0.4);')+'">';
+    h+=active?'<span>'+t.icon+'</span>':'<span>'+t.icon+'</span>';
+    h+='</div>';
+    h+='<div style="font-size:9px;font-weight:700;color:'+(active?C.pri:C.mut)+';">'+t.label+'</div>';
+    if(t.badge&&!active)h+='<div style="position:absolute;top:2px;right:8px;width:15px;height:15px;background:'+C.warn+';border-radius:8px;font-size:8px;font-weight:900;color:#000;display:flex;align-items:center;justify-content:center;">'+t.badge+'</div>';
+    h+='</div>';
+  });
+  return h;
+}
+
+var HINTS={
+  'my-ladders':'<li>Tap any <strong>ladder card</strong> to see full standings</li><li>The <strong>#N rank badge</strong> shows your current position</li><li>Use the <strong>bottom tabs</strong> to switch sections</li>',
+  'ladder-detail':'<li>Tap <strong>Matches tab</strong> to see this round\'s matchups</li><li>Gold/Silver/Bronze badges mark top 3 positions</li><li>Tap <strong>‹ back</strong> to return to My Ladders</li>',
+  'my-matches':'<li>Switch between <strong>Ladder / Private / History</strong> tabs</li><li>Tap <strong>Submit Result</strong> on your match card</li><li>Tap <strong>Accept</strong> on a pending challenge</li>',
+  'submit-result':'<li>Tap a <strong>player card</strong> to select the winner</li><li>Use <strong>+/−</strong> buttons to enter each set score</li><li>Tap <strong>Add Set</strong> for a third/fourth set</li><li>Tap <strong>Submit Result</strong> to confirm</li>',
+  'browse-clubs':'<li>Clubs sorted by <strong>GPS distance</strong> from player</li><li>Tap any club to see ladders and members</li><li>Green "Member" badge shows your clubs</li>',
+  'club-detail':'<li>Tap <strong>⚡</strong> next to any member to challenge them</li><li>Tap a <strong>ladder card</strong> to view its standings</li><li>Tap <strong>‹ back</strong> to return to clubs</li>',
+  'challenge-new':'<li>Select the <strong>ladder</strong> the challenge is for</li><li>Add a <strong>message</strong> and proposed play date</li><li>Tap <strong>Send Challenge</strong> to confirm — expires in 7 days</li>',
+  'profile':'<li>Shows cumulative stats <strong>across all ladders</strong></li><li>Tap any <strong>ladder card</strong> to jump to its standings</li><li>Recent matches show W/L with score</li>'
+};
+
+var SCREEN_NAMES={'my-ladders':'📱 Screen: My Ladders','ladder-detail':'📱 Screen: Ladder Detail','my-matches':'📱 Screen: My Matches','submit-result':'📱 Screen: Submit Result','browse-clubs':'📱 Screen: Browse Clubs','club-detail':'📱 Screen: Club Detail','challenge-new':'📱 Screen: New Challenge','profile':'📱 Screen: Profile'};
+
+function render(){
+  var c=document.getElementById('demoContent');
+  var t=document.getElementById('demoTabBar');
+  var n=document.getElementById('demoScreenName');
+  var hl=document.getElementById('demoHintsList');
+  if(!c)return;
+  switch(DS.screen){
+    case 'my-ladders': c.innerHTML=sMyLadders(); break;
+    case 'ladder-detail': c.innerHTML=sLadderDetail(); break;
+    case 'my-matches': c.innerHTML=sMyMatches(); break;
+    case 'submit-result': c.innerHTML=sSubmitResult(); break;
+    case 'browse-clubs': c.innerHTML=sBrowseClubs(); break;
+    case 'club-detail': c.innerHTML=sClubDetail(); break;
+    case 'challenge-new': c.innerHTML=sChallengeNew(); break;
+    case 'profile': c.innerHTML=sProfile(); break;
+    default: c.innerHTML=sMyLadders();
+  }
+  if(t) t.innerHTML=renderTabBar();
+  if(n) n.textContent=SCREEN_NAMES[DS.screen]||'📱 '+DS.screen;
+  if(hl) hl.innerHTML=HINTS[DS.screen]||'';
+}
+
+window.demoGo=function(s){DS.stack.push(DS.screen);DS.screen=s;if(s==='submit-result'){DS.winner=null;DS.sets=[[0,0]];DS.submitDone=false;}render();};
+window.demoBack=function(){if(DS.stack.length>0){DS.screen=DS.stack.pop();render();}};
+window.demoTab=function(s){DS.stack=[];DS.screen=s;var m={'my-ladders':'ladders','my-matches':'matches','browse-clubs':'clubs','profile':'profile'};DS.activeTab=m[s]||'ladders';if(s==='my-matches')DS.matchesTab='ladder';render();};
+window.demoNavigate=function(s){DS.stack=[];DS.screen=s;if(s==='submit-result'){DS.winner=null;DS.sets=[[0,0]];DS.submitDone=false;}var tabMap={'my-ladders':'ladders','my-matches':'matches','browse-clubs':'clubs','profile':'profile','ladder-detail':'ladders','submit-result':'matches','club-detail':'clubs','challenge-new':'clubs'};DS.activeTab=tabMap[s]||DS.activeTab;render();};
+window.demoLadderTab=function(t){DS.ladderTab=t;render();};
+window.demoMatchesTab=function(t){DS.matchesTab=t;render();};
+window.demoSelectWinner=function(id){DS.winner=id;render();};
+window.demoAdjust=function(i,p,d){DS.sets[i][p]=Math.max(0,Math.min(99,DS.sets[i][p]+d));render();};
+window.demoAddSet=function(){if(DS.sets.length<5){DS.sets.push([0,0]);render();}};
+window.demoRemoveSet=function(i){if(DS.sets.length>1){DS.sets.splice(i,1);render();}};
+window.demoSubmit=function(){if(!DS.winner)return;DS.submitDone=true;render();};
+window.demoSubmitBack=function(){DS.submitDone=false;DS.screen='my-matches';DS.matchesTab='history';DS.stack=[];render();};
+window.demoAccept=function(id){DS.cStatus[id]='accepted';render();};
+window.demoDecline=function(id){DS.cStatus[id]='declined';render();};
+window.demoChallengeBack=function(){DS.screen='club-detail';DS.stack=[];render();};
+
+render();
+})();
+</script>
 
 <!-- ══════════════════════════════════════════
      SECTION 1 — PRODUCT OVERVIEW
