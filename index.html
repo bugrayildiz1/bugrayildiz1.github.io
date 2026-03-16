@@ -213,10 +213,19 @@
 
     <footer>
       <div class="legal">
-        <span>© <span id="year"></span> ANKABEY İNŞAAT TİCARET LTD ŞTİ • All rights reserved.</span>
+        <span>© <span id="year"></span> ANKABEY İNŞAAT TİCARET LTD ŞTİ • All rights reserved.<button id="playrise-btn" onclick="openPlayRise()" style="margin-left:8px;background:#161b22;border:1px solid #2a2f3a;color:#4cc38a;font-size:11px;font-weight:600;cursor:pointer;padding:2px 8px;border-radius:6px;vertical-align:middle;letter-spacing:.4px">PlayRise</button></span>
         <span>Registered address: 68: S N:5/3, Ankara 06400, Turkey • Email: info@ankabey.nl • Phone: +90 000 000 0000</span>
       </div>
     </footer>
+
+    <!-- PlayRise Documentation Modal -->
+    <div id="playrise-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;flex-direction:column">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#161b22;border-bottom:1px solid #2a2f3a">
+        <span style="font-weight:700;color:#4cc38a">PlayRise Documentation</span>
+        <button onclick="closePlayRise()" style="background:transparent;border:1px solid #2a2f3a;color:#e6edf3;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:14px">✕ Close</button>
+      </div>
+      <iframe src="PlayRise_Documentation.html" style="flex:1;border:none;width:100%;height:100%"></iframe>
+    </div>
   </div>
 
   <!-- Minimal JS for year, simple consent bar, and quick copy helpers -->
@@ -231,6 +240,14 @@
     function dismiss(){
       localStorage.setItem('ankabey-consent','1');
       document.getElementById('consent').classList.add('hide');
+    }
+
+    function openPlayRise(){
+      var m = document.getElementById('playrise-modal');
+      m.style.display = 'flex';
+    }
+    function closePlayRise(){
+      document.getElementById('playrise-modal').style.display = 'none';
     }
     (function(){
       if(localStorage.getItem('ankabey-consent')==='1'){
