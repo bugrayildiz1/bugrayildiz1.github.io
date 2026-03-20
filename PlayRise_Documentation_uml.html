@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PlayRise — UML Activity Diagrams</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d1117;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 40px 20px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #4a9eff;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 48px;
+  }
+  .section-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #64748b;
+    margin: 56px 0 24px;
+    padding-left: 16px;
+    border-left: 4px solid #4a9eff;
+  }
+  .diagram-card {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 16px;
+    padding: 32px 24px;
+    margin-bottom: 32px;
+  }
+  .diagram-card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+  .diagram-card p {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-bottom: 24px;
+  }
+  .diagram-card .mermaid {
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tag-unauth { background: #374151; color: #9ca3af; }
+  .tag-player { background: #1d3557; color: #4a9eff; }
+  .tag-owner  { background: #1a2e1a; color: #4ade80; }
+  .tag-shared { background: #2d1a3e; color: #c084fc; }
+</style>
+</head>
+<body>
+
+<h1>PlayRise — UML Activity Diagrams</h1>
+<p class="subtitle">Complete activity diagrams for every use case &nbsp;·&nbsp; Unauthenticated &nbsp;·&nbsp; Player &nbsp;·&nbsp; Club Owner</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section-heading">Unauthenticated User</div>
+
+<div class="diagram-card">
+  <span class="tag tag-unauth">Unauthenticated</span>
+  <h2>1. App Entry &amp; Auth Guard</h2>
+  <p>Routing decision made on every launch based on session, profile flag, and club membership.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A[App Launch] --> B[Load Auth State from Supabase]
+    B --> C{Session exists?}
+    C -->|No| D[Redirect to Login Screen]
+    C -->|Yes| E[Fetch Profile Row and Club Members Admin Row]
+    E --> F{is_club_owner = true OR admin in club_members?}
+    F -->|No| G[Route to Player Tabs]
+    F -->|Yes| H{onboarding_completed = true OR has existing club row?}
+    H -->|No| I[Route to Club Onboarding Wizard]
+    H -->|Yes| J[Route to Owner Tabs]
+    D --> K([Login Screen])
+    G --> L([Ladders Tab])
+    I --> M([Onboarding Step 0])
+    J --> N([Members Tab])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style K fill:#1e2a3a,stroke:#4a9eff
+    style L fill:#1e2a3a,stroke:#4a9eff
+    style M fill:#1a2e1a,stroke:#4ade80
+    style N fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-unauth">Unauthenticated</span>
+  <h2>2. Login</h2>
+  <p>Existing user signs in. Routing branches to player tabs or owner tabs based on role.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A[Open Login Screen] --> B[Enter Email and Password]
+    B --> C[Tap Sign In]
+    C --> D[supabase.auth.signInWithPassword]
+    D --> E{Auth Error?}
+    E -->|Yes| F[Display Error Alert]
+    F --> B
+    E -->|No| G[Fetch Profile and Club Members admin row in parallel]
+    G --> H{is_club_owner OR admin in any club?}
+    H -->|Player| I[Route to Player Tabs]
+    H -->|Owner| J{onboarding done or has club?}
+    J -->|No| K[Route to Onboarding]
+    J -->|Yes| L[Route to Owner Tabs]
+    I --> M([Ladders Tab])
+    K --> N([Onboarding Step 0])
+    L --> O([Members Tab])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style M fill:#1e2a3a,stroke:#4a9eff
+    style N fill:#1a2e1a,stroke:#4ade80
+    style O fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-unauth">Unauthenticated</span>
+  <h2>3. Sign Up — Player</h2>
+  <p>New user registers as a player. Profile is created with is_club_owner = false.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A[Open Sign Up Screen] --> B[Select Role: Player]
+    B --> C[Enter Username]
+    C --> D[Enter Full Name]
+    D --> E[Enter Email]
+    E --> F[Enter Password]
+    F --> G[Tap Create Account]
+    G --> H[supabase.auth.signUp]
+    H --> I{Auth Error?}
+    I -->|Yes| J[Show Error Alert]
+    J --> C
+    I -->|No| K[INSERT profiles row with is_club_owner = false]
+    K --> L{Insert Error?}
+    L -->|Yes| M[Show Error Alert]
+    L -->|No| N[Auth state change fires layout routing effect]
+    N --> O[Route to Player Tabs]
+    O --> P([Ladders Tab])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style P fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-unauth">Unauthenticated</span>
+  <h2>4. Sign Up — Club Owner</h2>
+  <p>New user registers as a club owner. Directed to onboarding wizard after account creation.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A[Open Sign Up Screen] --> B[Select Role: Club Owner]
+    B --> C[Enter Username, Full Name, Email, Password]
+    C --> D[Tap Create Account]
+    D --> E[supabase.auth.signUp]
+    E --> F{Auth Error?}
+    F -->|Yes| G[Show Error Alert]
+    G --> C
+    F -->|No| H[INSERT profiles row with is_club_owner = true]
+    H --> I[Auth state change fires layout routing effect]
+    I --> J{onboarding completed?}
+    J -->|No| K[Route to Club Onboarding]
+    K --> L([Step 0: Club Name and Description])
+    J -->|Yes| M([Owner Tabs])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style L fill:#1a2e1a,stroke:#4ade80
+    style M fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section-heading">Club Owner</div>
+
+<div class="diagram-card">
+  <span class="tag tag-owner">Club Owner</span>
+  <h2>5. Club Onboarding Wizard (6 Steps)</h2>
+  <p>First-time setup wizard. Creates the club, courts, and marks the profile as onboarding complete.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Step 0: Identity]) --> B[Enter Club Name - required, Enter Description - optional]
+    B --> C[Tap Next]
+    C --> D([Step 1: Sport Selection])
+    D --> E[Toggle sports on/off: Tennis, Padel, Squash, Badminton, Pickleball]
+    E --> F{At least 1 sport selected?}
+    F -->|No| E
+    F -->|Yes| G[Tap Next]
+    G --> H([Step 2: Courts])
+    H --> I[For each selected sport: Tap + to add court name, Tap x to remove]
+    I --> J[Tap Next]
+    J --> K([Step 3: Opening Hours])
+    K --> L[Per day: toggle Open or Closed]
+    L --> M[Select opening time chip, Select closing time chip]
+    M --> N[Tap Next]
+    N --> O([Step 4: Location])
+    O --> P[Enter Address, City, Phone - all optional]
+    P --> Q[Tap Next]
+    Q --> R[INSERT clubs row with name, description, sports, opening_hours JSONB, phone, location]
+    R --> T{Schema error: opening_hours or phone column not found?}
+    T -->|Yes - Fallback| U[INSERT clubs row without new columns]
+    T -->|No| V[INSERT courts rows for each court name per sport]
+    U --> V
+    V --> W[UPDATE profiles: is_club_owner = true, onboarding_completed = true]
+    W --> X([Step 5: Done])
+    X --> Y[Display generated Invite Code]
+    Y --> Z[Tap Go to Dashboard]
+    Z --> END[Route to Owner Tabs]
+
+    style S fill:#4ade80,stroke:#4ade80,color:#000
+    style A fill:#1a2e1a,stroke:#4ade80
+    style D fill:#1a2e1a,stroke:#4ade80
+    style H fill:#1a2e1a,stroke:#4ade80
+    style K fill:#1a2e1a,stroke:#4ade80
+    style O fill:#1a2e1a,stroke:#4ade80
+    style X fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-owner">Club Owner</span>
+  <h2>6. My Club Tab — Full Management</h2>
+  <p>Owner views and manages their club: info, invite code, courts, opening hours, quick actions.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([My Club Tab]) --> B[Fetch admin club via club_members where role = admin]
+    B --> C{Club found?}
+    C -->|No| D[Show Empty State]
+    C -->|Yes| E[Display Hero Card, Stats Strip, Invite Code, Accordion Sections]
+    E --> F{User Action?}
+
+    F -->|Share Invite Code| G[native Share dialog with invite code]
+    G --> E
+
+    F -->|Regenerate Code| H[Show Confirm Alert]
+    H --> I[UPDATE clubs set invite_code to random string]
+    I --> J[Refresh club data]
+    J --> E
+
+    F -->|Edit Club Info| K[Edit name, description, location, phone]
+    K --> L[Tap Save Changes]
+    L --> M[UPDATE clubs row]
+    M --> N{Error?}
+    N -->|Yes| O[Show Error Alert]
+    N -->|No| P[Show Saved confirmation]
+    O --> E
+    P --> J
+
+    F -->|View Opening Hours| Q[Read-only display of hours per weekday]
+    Q --> E
+
+    F -->|Add Court| R[Select sport tab, Type court name, Tap + button]
+    R --> S2[INSERT courts row]
+    S2 --> J
+
+    F -->|Toggle Court Active| T[UPDATE courts is_active toggled]
+    T --> J
+
+    F -->|Delete Court| U[DELETE courts row]
+    U --> J
+
+    F -->|New Ladder| V[Navigate to ladder/create with club_id param]
+    F -->|Admin Panel| W[Navigate to club/manage with club id param]
+
+    F -->|Delete Club| X[Show Destructive Confirm Alert]
+    X --> Y[DELETE clubs row]
+    Y --> Z[Show Empty State]
+
+    F -->|Sign Out| AA[supabase.auth.signOut, Clear profile state]
+    AA --> AB([Login Screen])
+
+    style S fill:#4ade80,stroke:#4ade80,color:#000
+    style A fill:#1a2e1a,stroke:#4ade80
+    style AB fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-owner">Club Owner</span>
+  <h2>7. Create Ladder</h2>
+  <p>Owner creates a new ladder league with sport, format, duration, and optional season dates.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Create Ladder Screen]) --> B[Select Sport: Tennis, Padel, or Squash]
+    B --> C[Enter Ladder Name - required]
+    C --> D[Set Max Players: tap plus or minus in steps of 4, or keep Unlimited]
+    D --> E[Select Round Duration chip: 1, 2, 3, or 4 weeks]
+    E --> F[Select Match Format card: Best of 3, 1 Set, Match TB, or Custom]
+    F --> G[Optionally pick Season Start and End dates via DatePickerField]
+    G --> H[Preview card updates live with all selected options]
+    H --> I[Tap Create Ladder]
+    I --> J{Name filled?}
+    J -->|No| K[Alert: Ladder name is required]
+    K --> C
+    J -->|Yes| L[INSERT ladders with name, sport, max_players, round_duration_days, match_format, season dates]
+    L --> M{Schema error for match_format or round_duration_days columns?}
+    M -->|Yes - Fallback| N[INSERT ladders with name, sport, season dates only]
+    N --> O{Fallback Error?}
+    O -->|Yes| P[Show Error Alert]
+    O -->|No| Q[Alert: Created with migration note]
+    M -->|No| R{Insert Error?}
+    R -->|Yes| P
+    R -->|No| T[Alert: Ladder Created!]
+    Q --> U{User Choice}
+    T --> U
+    U -->|View Ladder| V[Navigate to ladder/id]
+    U -->|Back| W[Navigate back to Owner Tabs]
+
+    style S fill:#4ade80,stroke:#4ade80,color:#000
+    style A fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-owner">Club Owner</span>
+  <h2>8. Manage Ladder</h2>
+  <p>Owner edits ladder settings, removes players, or resets all rankings.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Manage Ladder Screen]) --> B[Fetch ladder row and all ladder_entries with profiles]
+    B --> C[Display: name, sport, active toggle, season dates, player list with W/L/Pts]
+    C --> D{User Action?}
+
+    D -->|Toggle Active Switch| E[UPDATE ladders set is_active to toggled value]
+    E --> F[Refresh state]
+    F --> C
+
+    D -->|Edit Name or Sport or Dates| G[Update local state fields]
+    G --> H[Tap Save Changes]
+    H --> I[UPDATE ladders row: name, sport, is_active, season_start, season_end]
+    I --> J{Error?}
+    J -->|Yes| K[Show Error Alert]
+    J -->|No| L[Show Saved Alert]
+    K --> C
+    L --> F
+
+    D -->|Remove Player| M[Show Confirm Alert]
+    M --> N[DELETE ladder_entries where user_id and ladder_id match]
+    N --> O[Refresh entries list]
+    O --> C
+
+    D -->|Reset Rankings| P[Show Confirm Alert]
+    P --> Q[UPDATE all ladder_entries: position by joined_at order, wins = 0, losses = 0, points = 0]
+    Q --> O
+
+    D -->|Navigate Back| R[router.back or router.replace to Owner Tabs]
+
+    style S fill:#4ade80,stroke:#4ade80,color:#000
+    style A fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-owner">Club Owner</span>
+  <h2>9. Manage Members</h2>
+  <p>Owner views all club members, promotes/demotes roles, and removes members.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Members Tab]) --> B[Fetch club IDs where user is admin in club_members]
+    B --> C[Fetch all club_members rows with profile joins]
+    C --> D[Display members grouped by club with role badges: admin or member]
+    D --> E{User Action?}
+
+    E -->|Pull to Refresh| F[Re-fetch all data]
+    F --> D
+
+    E -->|Toggle Role| G{Is selected member = self?}
+    G -->|Yes| H[Block action: Cannot change own role]
+    H --> D
+    G -->|No| I[UPDATE club_members set role = admin or member]
+    I --> J[Refresh member list]
+    J --> D
+
+    E -->|Remove Member| K{Is selected member = self?}
+    K -->|Yes| L[Block action: Cannot remove self]
+    L --> D
+    K -->|No| M[Show Confirm Alert]
+    M --> N[DELETE club_members row]
+    N --> J
+
+    style S fill:#4ade80,stroke:#4ade80,color:#000
+    style A fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-owner">Club Owner</span>
+  <h2>10. Create Tournament</h2>
+  <p>Owner creates a new tournament with sport, max players, and club assignment.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Tournaments Tab]) --> B[Fetch tournaments for all admin clubs]
+    B --> C[Display tournament list: name, sport badge, status, player count]
+    C --> D{User Action?}
+
+    D -->|Pull to Refresh| E[Re-fetch tournaments]
+    E --> C
+
+    D -->|Tap + Button| F[Open Create Tournament Modal]
+    F --> G[Enter Tournament Name]
+    G --> H[Select Sport: Tennis, Padel, or Squash]
+    H --> I[Set Max Players with stepper]
+    I --> J[Select Club from admin clubs dropdown]
+    J --> K[Tap Create]
+    K --> L{Name filled?}
+    L -->|No| M[Alert: name required]
+    M --> G
+    L -->|Yes| N[INSERT tournaments row: name, sport, max_players, club_id, status = upcoming]
+    N --> O{Error?}
+    O -->|Yes| P[Show Error Alert]
+    O -->|No| Q[Close Modal and Refresh list]
+    Q --> C
+
+    D -->|Delete Tournament| R[Show Confirm Alert]
+    R --> T[DELETE tournaments row]
+    T --> E
+
+    style S fill:#4ade80,stroke:#4ade80,color:#000
+    style A fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section-heading">Player</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>11. Browse Clubs &amp; Join a Club</h2>
+  <p>Player discovers clubs near them using location, browses details, and joins via member insert.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Clubs Tab]) --> B[Request Location Permission]
+    B --> C{Permission granted?}
+    C -->|No| D[Fetch all clubs with no distance sorting]
+    C -->|Yes| E[Get current coordinates from expo-location]
+    E --> F[Fetch clubs_with_member_count view]
+    F --> G[Calculate Haversine distance per club from current position]
+    G --> H[Sort clubs by distance ascending]
+    D --> I[Display club cards: name, sport badges, member count, distance]
+    H --> I
+    I --> J{User Action?}
+
+    J -->|Pull to Refresh| K[Re-fetch and recalculate distances]
+    K --> I
+
+    J -->|Tap Club Card| L[Navigate to club detail screen]
+    L --> M([Club Detail Screen])
+    M --> N[Fetch club info, ladders, and members]
+    N --> O{Is current user a member?}
+
+    O -->|Not a Member| P[Show Become a Member button]
+    P --> Q[Tap Become a Member]
+    Q --> R[INSERT club_members: club_id, user_id, role = member]
+    R --> T{Error?}
+    T -->|Yes| U[Show Error Alert]
+    T -->|No| V[Refresh: user is now member]
+    V --> W[Show Leave Club button]
+
+    O -->|Member not admin| W
+    W --> X[Tap Leave Club]
+    X --> Y[Show Confirm Alert]
+    Y --> Z[DELETE club_members row]
+    Z --> AA[Refresh: user is no longer member]
+    AA --> P
+
+    O -->|Admin| AB[Show Admin Panel button]
+    AB --> AC[Navigate to club/manage]
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style M fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>12. Join a Ladder</h2>
+  <p>Player browses a club's ladders, views standings, and joins by inserting a ladder entry.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Club Detail - Ladders Tab]) --> B[Display list of active ladders in the club]
+    B --> C[Tap a Ladder row]
+    C --> D([Ladder Detail Screen])
+    D --> E[Fetch standings: ladder_entries with profile joins ordered by position]
+    E --> F{Is current user already in ladder_entries?}
+
+    F -->|Yes - Member| G[Show standings with user row highlighted and current rank]
+    G --> H{User Action?}
+    H -->|Switch to Matches Tab| I[Display This Round and Past Matches]
+    H -->|Pull to Refresh| J[Re-fetch standings and matches]
+    J --> G
+
+    F -->|No - Not Member| K[Show Join Ladder button below standings table]
+    K --> L[Tap Join Ladder]
+    L --> M[SELECT MAX position from ladder_entries for this ladder]
+    M --> N[INSERT ladder_entries: ladder_id, user_id, position = max + 1, wins = 0, losses = 0, points = 0]
+    N --> O{Error?}
+    O -->|Yes| P[Show Error Alert]
+    O -->|No| Q[Refresh: user now appears in standings table]
+    Q --> G
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style D fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>13. View My Ladders &amp; Profile</h2>
+  <p>Player views all enrolled ladders on the Ladders tab and their global stats on the Profile tab.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Ladders Tab]) --> B[Fetch ladder_entries where user_id = current user]
+    B --> C[JOIN ladders and clubs to enrich each entry]
+    C --> D{Any ladders enrolled?}
+    D -->|No| E[Show empty state: Browse Clubs to join a ladder]
+    D -->|Yes| F[Display ladder cards: sport emoji, name, club name, rank badge, W L Pts]
+    F --> G{User Action?}
+    G -->|Tap Ladder Card| H[Navigate to ladder/id screen]
+    G -->|Pull to Refresh| I[Re-fetch all entries]
+    I --> C
+
+    AA([Profile Tab]) --> AB[Fetch profile row from profiles table]
+    AB --> AC[Fetch all ladder_entries for current user]
+    AC --> AD[Compute: total wins, total losses, win rate percent, ladder count]
+    AD --> AE[Display avatar initials circle, username, stats strip]
+    AE --> AF[List all enrolled ladders with rank badges]
+    AF --> AG{User Action?}
+    AG -->|Tap Ladder| AH[Navigate to ladder/id screen]
+    AG -->|Pull to Refresh| AI[Re-fetch profile and entries]
+    AI --> AB
+    AG -->|Tap Sign Out| AJ[supabase.auth.signOut, Clear session and profile state]
+    AJ --> AK([Login Screen])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style AA fill:#1e2a3a,stroke:#4a9eff
+    style AK fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>14. Send a Challenge</h2>
+  <p>Player challenges another club member to a match on a specific ladder.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([Club Detail - Members Tab]) --> B[List all members excluding self and admins]
+    B --> C[Tap the lightning bolt Challenge button on a member row]
+    C --> D([New Challenge Screen])
+    D --> E[Display VS card: You vs Opponent name]
+    E --> F[Fetch active ladders for this club]
+    F --> G{Any active ladders?}
+    G -->|No| H[Show: No active ladders - Ask owner to create one]
+    G -->|Yes| I[Display ladder options as selectable cards with sport emoji]
+    I --> J[Select a ladder]
+    J --> K[Optionally type a message in text input]
+    K --> L[Optionally pick a proposed date via DatePickerField native picker]
+    L --> M[Tap Send Challenge]
+    M --> N[INSERT challenges: ladder_id, challenger_id, challenged_id, status = pending, message, proposed_date, expires_at = now + 7 days]
+    N --> O{Error?}
+    O -->|Yes| P[Show Error Alert]
+    O -->|No| Q[Alert: Challenge Sent! Waiting for response]
+    Q --> R[Navigate back to club detail]
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style D fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>15. Accept or Decline a Challenge</h2>
+  <p>Challenged player reviews incoming challenges and accepts or declines them.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([My Matches - Private Tab]) --> B[Fetch challenges where challenged_id = me AND status = pending]
+    B --> C{Any pending challenges?}
+    C -->|No| D[Show empty state]
+    C -->|Yes| E[Display challenge cards: challenger name, ladder, message, proposed date, expiry countdown]
+    E --> F{User Action?}
+
+    F -->|Pull to Refresh| G[Re-fetch challenges]
+    G --> B
+
+    F -->|Accept| H[UPDATE challenges set status = accepted]
+    H --> I{Error?}
+    I -->|Yes| J[Show Error Alert]
+    I -->|No| K[Database trigger fires: creates match row with status = scheduling]
+    K --> L[Refresh challenge list]
+    L --> B
+
+    F -->|Decline| M[UPDATE challenges set status = declined]
+    M --> N[Refresh challenge list]
+    N --> B
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>16. Match Scheduling — Propose Times</h2>
+  <p>The proposer offers up to 3 date/time/court slot options to their opponent.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([My Matches - Ladder Tab]) --> B[Fetch matches where status IN scheduling or confirmed]
+    B --> C[For scheduling matches: fetch match_proposals where status = pending]
+    C --> D[Display match card with status-aware action buttons]
+    D --> E{Match status and my role?}
+
+    E -->|scheduling - I am proposer, no active proposal| F[Show Propose Time button]
+    E -->|scheduling - I am proposer, proposal exists| G[Show Awaiting Response label]
+    E -->|scheduling - I am opponent, no proposal yet| H[Show Waiting for Proposal label]
+    E -->|scheduling - I am opponent, proposal exists| I[Show Respond to Proposal button]
+    E -->|confirmed| J[Show Submit Result button and Chat icon button]
+
+    F --> K[Tap Propose Time]
+    K --> L([Schedule Screen])
+    L --> M[Fetch active courts for this club and sport]
+    M --> N[For Slot 1 required and Slots 2 and 3 optional]
+    N --> O[Pick date from next-14-days horizontal scroll chips]
+    O --> P[Pick time from common-times horizontal scroll chips: 08:00 to 20:00]
+    P --> Q[Optionally pick a court from radio chips including Any option]
+    Q --> R[Tap Send Proposal]
+    R --> T{At least 1 slot filled?}
+    T -->|No| U[Alert: Add at least one slot]
+    U --> O
+    T -->|Yes| V[INSERT match_proposals: proposed_by, match_id, slot_1_time, slot_1_court, slot_2_time, slot_2_court, slot_3_time, slot_3_court, status = pending]
+    V --> W{Error?}
+    W -->|Yes| X[Show Error Alert]
+    W -->|No| Y[Alert: Proposal Sent! Opponent has 48 hours]
+    Y --> Z[Navigate back]
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style L fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>17. Match Scheduling — Respond to Proposal</h2>
+  <p>Opponent reviews proposed slots and accepts one, or declines all to counter-propose.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([My Matches - Ladder Tab]) --> B[Tap Respond to Proposal button]
+    B --> C([Respond Screen])
+    C --> D[Fetch proposal row with court name joins for all 3 slots]
+    D --> E[Display up to 3 slots as radio button options showing date, time, court name]
+    E --> F{User Action?}
+
+    F -->|Select a slot radio button| G[Highlight selected slot]
+    G --> H[Tap Accept This Slot]
+    H --> I[Call RPC: accept_match_proposal with proposal_id and accepted slot number]
+    I --> J{RPC Error?}
+    J -->|Yes| K[Show Error Alert]
+    J -->|No| L[Match status updated to confirmed, scheduled_for set to accepted slot time]
+    L --> M[Alert: Match Confirmed!]
+    M --> N[Navigate back]
+
+    F -->|None of these work| O[Tap: None of these work - Propose new times]
+    O --> P[UPDATE match_proposals set status = declined]
+    P --> Q[Navigate to Schedule Screen for counter-proposal]
+    Q --> R([Schedule Screen])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style C fill:#1e2a3a,stroke:#4a9eff
+    style R fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>18. Match Chat — Real-Time</h2>
+  <p>Both players chat within a confirmed match using Supabase Realtime subscriptions.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([My Matches - confirmed match]) --> B[Tap Chat icon button]
+    B --> C([Match Chat Screen])
+    C --> D[Fetch message history: match_messages with sender profile join ordered by sent_at ASC]
+    D --> E[Subscribe to Supabase Realtime: channel match_chat - match_id, listening for INSERT events on match_messages table]
+    E --> F[Display messages in FlatList with date separators, opponent avatar, bubble layout: mine on right, theirs on left]
+    F --> G[Auto-scroll to bottom on load and new message]
+    G --> H{User Action?}
+
+    H -->|Type and send message| I[Update input field state]
+    I --> J[Tap Send or press Return]
+    J --> K[Optimistic insert: add message locally with temp id and scroll to bottom]
+    K --> L[INSERT match_messages: match_id, sender_id, body]
+    L --> M{Error?}
+    M -->|Yes| N[Remove optimistic message from local state]
+    M -->|No| O[Replace temp id with real database row id]
+    O --> H
+
+    H -->|Realtime INSERT event fires| P[New message arrives from opponent]
+    P --> Q[Fetch sender profile for incoming message]
+    Q --> R[Append to message list if not a duplicate]
+    R --> G
+
+    H -->|Navigate Back| T[Unsubscribe Realtime channel via supabase.removeChannel]
+    T --> U([My Matches Screen])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style C fill:#1e2a3a,stroke:#4a9eff
+    style U fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>19. Submit Match Result</h2>
+  <p>Either player submits the outcome after the match is played. Points are updated via RPC.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([My Matches - confirmed match]) --> B[Tap Submit Result button]
+    B --> C([Submit Result Screen])
+    C --> D[Display player 1 vs player 2 name cards]
+    D --> E[Select winner: tap Player 1 or Player 2 card to highlight]
+    E --> F[Optionally add set scores: tap + to add a set row, enter scores, up to 5 sets]
+    F --> G[Score preview renders live showing formatted result string]
+    G --> H[Tap Submit Result]
+    H --> I{Winner selected?}
+    I -->|No| J[Alert: Please select a winner]
+    J --> E
+    I -->|Yes| K[Call RPC: record_match_result with match_id, ladder_id, player1_id, player2_id, winner_id, score JSON, challenge_id]
+    K --> L{RPC Error?}
+    L -->|Yes| M[Show Error Alert with error message]
+    L -->|No| N[Match status set to played, Ladder entries updated: winner plus 20 pts plus 1 win, loser plus 1 loss, positions recalculated]
+    N --> O[Alert: Result Recorded! Points updated]
+    O --> P[Navigate back]
+    P --> Q([My Matches - updated list])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style C fill:#1e2a3a,stroke:#4a9eff
+    style Q fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<div class="diagram-card">
+  <span class="tag tag-player">Player</span>
+  <h2>20. Mark Unavailable for a Round</h2>
+  <p>Player declares they cannot play during a round window. Admin is notified of walkover risk.</p>
+  <div class="mermaid">
+flowchart TD
+    S([Start]) --> A
+    A([My Matches - Ladder Tab]) --> B[Tap Mark Unavailable button on a match card]
+    B --> C([Mark Unavailable Screen])
+    C --> D[Display round window: Start date to End date]
+    D --> E[Show warning banner: Opponent may be awarded walkover if match cannot be rescheduled]
+    E --> F[Optionally type a reason up to 200 characters: e.g. Holiday, injury, travel]
+    F --> G[Tap Confirm Unavailability]
+    G --> H[UPSERT round_unavailability: ladder_id, user_id, round_start, round_end, reason, declared_at - onConflict: ladder_id + user_id + round_start]
+    H --> I{Error?}
+    I -->|Yes| J[Show Error Alert]
+    I -->|No| K[Alert: Unavailability Marked - Club admin has been notified - You may still receive a ranking penalty]
+    K --> L[Tap OK]
+    L --> M[Navigate Back]
+    M --> N([My Matches Screen])
+
+    style S fill:#4a9eff,stroke:#4a9eff,color:#fff
+    style A fill:#1e2a3a,stroke:#4a9eff
+    style C fill:#1e2a3a,stroke:#4a9eff
+    style N fill:#1e2a3a,stroke:#4a9eff
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section-heading">Shared — Cross Cutting</div>
+
+<div class="diagram-card">
+  <span class="tag tag-shared">Shared</span>
+  <h2>21. App Routing State Machine</h2>
+  <p>High-level overview of how all routing decisions branch from a single entry point.</p>
+  <div class="mermaid">
+flowchart TD
+    S([App Launch]) --> LOAD[Load session + profile + club_members admin check]
+    LOAD --> AUTH{Valid Session?}
+    AUTH -->|No| LOGIN([Login / Sign Up Screens])
+    AUTH -->|Yes| OWNER{is_club_owner = true OR admin in club_members?}
+    OWNER -->|No| PTABS([Player Tab Navigator: Ladders, My Matches, Clubs, Profile])
+    OWNER -->|Yes| DONE{onboarding_completed OR has admin club row?}
+    DONE -->|No| ONBOARD([Club Onboarding Wizard - 6-step animated flow])
+    DONE -->|Yes| OTABS([Owner Tab Navigator: Members, Ladders, Tournaments, My Club])
+
+    PTABS --> PSTACK[Player Stack Screens: club/id, ladder/id, match/schedule, match/respond, match/chat, match/new, challenge/new, match/unavailable]
+    OTABS --> OSTACK[Owner Stack Screens: ladder/create, ladder/manage, club/manage, match/new]
+
+    ONBOARD --> OTABS
+    LOGIN --> LOAD
+
+    style S fill:#c084fc,stroke:#c084fc,color:#000
+    style LOGIN fill:#2d1a3e,stroke:#c084fc
+    style PTABS fill:#1e2a3a,stroke:#4a9eff
+    style OTABS fill:#1a2e1a,stroke:#4ade80
+    style ONBOARD fill:#1a2e1a,stroke:#4ade80
+    style PSTACK fill:#1e2a3a,stroke:#4a9eff
+    style OSTACK fill:#1a2e1a,stroke:#4ade80
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 45,
+      rankSpacing: 55,
+      htmlLabels: true
+    },
+    themeVariables: {
+      primaryColor: '#1e2a3a',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#4a9eff',
+      lineColor: '#4a9eff',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#1e293b',
+      edgeLabelBackground: '#161b22',
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px'
+    }
+  });
+</script>
+</body>
+</html>
